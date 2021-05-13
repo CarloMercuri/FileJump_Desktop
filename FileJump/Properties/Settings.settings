@@ -1,0 +1,18 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="FileJump.Properties" GeneratedClassName="Settings">
+  <Profiles />
+  <Settings>
+    <Setting Name="MachineName" Type="System.String" Scope="User">
+      <Value Profile="(Default)">NULL</Value>
+    </Setting>
+    <Setting Name="DestinationFolder" Type="System.String" Scope="User">
+      <Value Profile="(Default)">NULL</Value>
+    </Setting>
+    <Setting Name="DeviceType" Type="System.String" Scope="User">
+      <Value Profile="(Default)">NULL</Value>
+    </Setting>
+    <Setting Name="RunOnStartup" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>
