@@ -63,6 +63,16 @@ namespace FileJump.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap BG2 {
+            get {
+                object obj = ResourceManager.GetObject("BG2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap delete {
             get {
                 object obj = ResourceManager.GetObject("delete", resourceCulture);
@@ -73,9 +83,79 @@ namespace FileJump.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap drag_drop_BG {
+            get {
+                object obj = ResourceManager.GetObject("drag_drop_BG", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drag_drop_BG_big {
+            get {
+                object obj = ResourceManager.GetObject("drag_drop_BG_big", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drag_drop_BG_dot {
+            get {
+                object obj = ResourceManager.GetObject("drag_drop_BG_dot", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drag_drop_BG_Icon {
+            get {
+                object obj = ResourceManager.GetObject("drag_drop_BG_Icon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap drag_drop_BG_new {
+            get {
+                object obj = ResourceManager.GetObject("drag_drop_BG_new", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap DragDropBackground {
             get {
                 object obj = ResourceManager.GetObject("DragDropBackground", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icon_arrow_left {
+            get {
+                object obj = ResourceManager.GetObject("icon_arrow_left", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icon_arrow_right {
+            get {
+                object obj = ResourceManager.GetObject("icon_arrow_right", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -183,6 +263,16 @@ namespace FileJump.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap shadow_base_full {
+            get {
+                object obj = ResourceManager.GetObject("shadow_base_full", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap TransferResult_CheckMark {
             get {
                 object obj = ResourceManager.GetObject("TransferResult_CheckMark", resourceCulture);
@@ -196,6 +286,26 @@ namespace FileJump.Properties {
         internal static System.Drawing.Bitmap TransferResult_Cross {
             get {
                 object obj = ResourceManager.GetObject("TransferResult_Cross", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TransferResult_Cross_Medium {
+            get {
+                object obj = ResourceManager.GetObject("TransferResult_Cross_Medium", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TransferResult_CrossThick {
+            get {
+                object obj = ResourceManager.GetObject("TransferResult_CrossThick", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

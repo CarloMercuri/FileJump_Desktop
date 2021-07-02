@@ -49,10 +49,10 @@ namespace FileJump.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("NULL")]
-        public string DeviceType {
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public int DeviceType {
             get {
-                return ((string)(this["DeviceType"]));
+                return ((int)(this["DeviceType"]));
             }
             set {
                 this["DeviceType"] = value;
@@ -61,13 +61,97 @@ namespace FileJump.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("True")]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
         public bool RunOnStartup {
             get {
                 return ((bool)(this["RunOnStartup"]));
             }
             set {
                 this["RunOnStartup"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool RememberLogin {
+            get {
+                return ((bool)(this["RememberLogin"]));
+            }
+            set {
+                this["RememberLogin"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LoggedOn {
+            get {
+                return ((bool)(this["LoggedOn"]));
+            }
+            set {
+                this["LoggedOn"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string user_email {
+            get {
+                return ((string)(this["user_email"]));
+            }
+            set {
+                this["user_email"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string user_token {
+            get {
+                return ((string)(this["user_token"]));
+            }
+            set {
+                this["user_token"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string user_password {
+            get {
+                return ((string)(this["user_password"]));
+            }
+            set {
+                this["user_password"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string user_FirstName {
+            get {
+                return ((string)(this["user_FirstName"]));
+            }
+            set {
+                this["user_FirstName"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string user_LastName {
+            get {
+                return ((string)(this["user_LastName"]));
+            }
+            set {
+                this["user_LastName"] = value;
             }
         }
     }

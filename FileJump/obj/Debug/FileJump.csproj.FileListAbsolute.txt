@@ -38,3 +38,11 @@ C:\dev\FileJump\FileJump\bin\Debug\JWT.pdb
 C:\dev\FileJump\FileJump\bin\Debug\JWT.xml
 C:\dev\FileJump\FileJump\bin\Debug\Newtonsoft.Json.xml
 C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.LoginPage.resources
+C:\dev\FileJump\FileJump\bin\Debug\CircularProgressBar.dll
+C:\dev\FileJump\FileJump\bin\Debug\WinFormAnimation.dll
+C:\dev\FileJump\FileJump\bin\Debug\CircularProgressBar.xml
+C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.FileUploadPage.resources
+C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.OnlineStoragePage.resources
+C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.RegistrationPage.resources
+C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.TestForm.resources
+C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.UserAccountPage.resources

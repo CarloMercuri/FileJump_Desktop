@@ -1,5 +1,7 @@
-﻿using FileJump.Network;
+﻿using FileJump.GUI;
+using FileJump.Network;
 using FileJump.Properties;
+using FileJump_Network.EventSystem;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -21,7 +23,7 @@ namespace FileJump
         Panel DragDropPanel;
         FlowLayoutPanel PanelFlowLayout;
         Button Send_Button;
-        List<FileQueueItem> CurrentSelectedFiles = new List<FileQueueItem>();
+        List<FileVisualDisplay> CurrentSelectedFiles = new List<FileVisualDisplay>();
         NetworkDevice targetDevice;
         int SelectedFileVisual = -1;
 
@@ -32,7 +34,7 @@ namespace FileJump
 
         public int MaxConcurrentTransfers;
 
-        private int ActiveTransfersCount;
+        public FileTransferType TransferType { get; set; }
 
         string[] imageExtensions = new string[] { ".jpg", ".jpeg", ".bmp", ".png" };
 
@@ -53,15 +55,88 @@ namespace FileJump
 
 
             MaxConcurrentTransfers = 4;
-            ActiveTransfersCount = 0;
+            TransferType = FileTransferType.Local;
 
-           
 
-            
-
-            
+            CreateDeviceUploadUI();
         }
 
+        public DevicePage(MainPage mainPageForm)
+        {
+            TransferType = FileTransferType.Online;
+
+            mainPage = mainPageForm;
+            InitializeComponent();
+            CreateDragAndDropVisual();
+            CreateDeviceUploadUI();
+            ApiCommunication.FileUploadProgress += UploadProgress;
+            
+
+        }
+
+        private void UploadProgress(object sender, FileTransferProgressEventArgs e)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void CreateOnlineUploadUI()
+        {
+
+        }
+
+        private void CreateDeviceUploadUI()
+        {
+            panel_TextInput = new Panel()
+            {
+                Location = new Point(41, DragDropPanel.Height + 40),
+                BackColor = Color.DarkGray,
+                Size = new Size(DragDropPanel.Width / 2 + 100, 60),
+            };
+
+            Label lbl_text = new Label()
+            {
+                Location = new Point(0, 20),
+                Text = "Or send a text message / link!",
+                Size = new Size(300, 30),
+                Font = new Font("Arial", 9, FontStyle.Regular)
+            };
+
+            TextBox tBox = new TextBox()
+            {
+                Location = new Point(0, 40),
+                Width = panel_TextInput.Width - 40,
+                Height = 40,
+                Font = new Font("Arial", 12, FontStyle.Regular)
+
+            };
+
+
+            Button btn_Send = new Button()
+            {
+                Location = new Point(tBox.Location.X + tBox.Width, 39),
+                Text = "Send",
+                Font = new Font("Arial", 10, FontStyle.Regular),
+                Width = panel_TextInput.Width - tBox.Width
+            };
+
+            this.AcceptButton = btn_Send;
+
+            btn_Send.Click += (sender, args) =>
+            {
+                if (tBox.Text == "")
+                {
+                    return;
+                }
+
+                SendTextMessage(tBox.Text);
+                tBox.Text = "";
+
+            };
+
+            panel_TextInput.Controls.Add(tBox);
+            panel_TextInput.Controls.Add(lbl_text);
+            this.Controls.Add(panel_TextInput);
+        }
 
         private void CreateDragAndDropVisual()
         {
@@ -110,65 +185,23 @@ namespace FileJump
 
             // Text input
 
-            panel_TextInput = new Panel()
-            {
-                Location = new Point(41, DragDropPanel.Height + 40),
-                BackColor = Color.DarkGray,
-                Size = new Size(DragDropPanel.Width / 2 + 100, 60),
-                
-                
-            };
-
-            Label lbl_text = new Label()
-            {
-                Location = new Point(0, 20),
-                Text = "Or send a text message / link!",
-                Size = new Size(300, 30),
-                Font = new Font("Arial", 9, FontStyle.Regular)
-            };
-
-            TextBox tBox = new TextBox()
-            {
-                Location = new Point(0, 40),
-                Width = panel_TextInput.Width - 40,
-                Height = 40,
-                Font = new Font("Arial", 12, FontStyle.Regular)
-
-            };
-
-
-            Button btn_Send = new Button()
-            {
-                Location = new Point(tBox.Location.X + tBox.Width, 39),
-                Text = "Send",
-                Font = new Font("Arial", 10, FontStyle.Regular),
-                Width = panel_TextInput.Width - tBox.Width
-            };
-
-            this.AcceptButton = btn_Send;
-
-            btn_Send.Click += (sender, args) =>
-            {
-                if(tBox.Text == "")
-                {
-                    return;
-                }
-
-                SendTextMessage(tBox.Text);
-                tBox.Text = "";
-
-            };
-
-            panel_TextInput.Controls.Add(tBox);
-            panel_TextInput.Controls.Add(lbl_text);
-            this.Controls.Add(panel_TextInput);
+           
 
         }
 
         
         private void SendTextMessage(string msg)
         {
-            DataProcessor.SendTextMessage(msg, targetDevice.EndPoint);
+            if(TransferType == FileTransferType.Local)
+            {
+                DataProcessor.SendTextMessage(msg, targetDevice.EndPoint);
+            }
+
+            if(TransferType == FileTransferType.Online)
+            {
+                // TODO: Add this.
+            }
+            
         }
 
         private void TextBoxKeyUp(Keys key, string msg)
@@ -212,6 +245,16 @@ namespace FileJump
                 Location = new Point(this.Width - 120, this.Height - 100)
             };
 
+            if (TransferType == FileTransferType.Local)
+            {
+                Send_Button.Text = "Send File(s)";
+            }
+
+            if (TransferType == FileTransferType.Online)
+            {
+                Send_Button.Text = "Upload File(s)";
+            }
+
             Send_Button.Click += SendButtonClicked;
 
             this.Controls.Add(Send_Button);
@@ -233,28 +276,44 @@ namespace FileJump
                 return;
             }
 
-            List<FileStructure> fList = new List<FileStructure>();
+            List<LocalFileStructure> fList = new List<LocalFileStructure>();
 
             // Sift through the files to see if there are some waiting to be sent
             for (int i = 0; i < CurrentSelectedFiles.Count; i++)
             {
-                if(CurrentSelectedFiles[i].CurrentState == FileQueueState.Inactive)
+                if(CurrentSelectedFiles[i].CurrentState == FileStatus.Inactive)
                 {
-                    fList.Add(CurrentSelectedFiles[i].fileStruct);
+                    fList.Add(CurrentSelectedFiles[i].FileStructLocal);
                 }
 
             }
 
-            DataProcessor.SendFiles(fList, targetDevice.EndPoint);
+            if (TransferType == FileTransferType.Local)
+            {
+                DataProcessor.SendFiles(fList, targetDevice.EndPoint);
+                return;
+            }
+
+            if (TransferType == FileTransferType.Online)
+            {
+                StartOnlineUpload();
+            }
+
+
+
+        }
+
+        private async void StartOnlineUpload()
+        {
 
         }
 
 
-        private void AddNewQueuedFile(FileStructure file_struct, int id)
+        private void AddNewQueuedFile(LocalFileStructure file_struct, int id)
         {
-            FileQueueItem fileVis = new FileQueueItem();
+            FileVisualDisplay fileVis = new FileVisualDisplay();
             fileVis.ID = id;
-            fileVis.fileStruct = file_struct;
+            fileVis.FileStructLocal = file_struct;
 
             if (PanelFlowLayout == null)
             {
@@ -335,37 +394,27 @@ namespace FileJump
 
             string name = file_struct.FileName + file_struct.FileExtension;
 
-            fileVis.label_FileName.Text = ShortenFileName(name, 6);
+            fileVis.label_FileName.Text = GUITools.ShortenFileName(name, 6);
             
 
             fileVis.panel_Parent.Controls.Add(fileVis.label_FileName);
 
             fileVis.panel_Parent.Controls.Add(fileVis.btn_Delete);
-            fileVis.CurrentState = FileQueueState.Inactive;
+            fileVis.CurrentState = FileStatus.Inactive;
 
             PanelFlowLayout.Controls.Add(fileVis.panel_Parent);
 
             CurrentSelectedFiles.Add(fileVis);
         }
 
-        private string ShortenFileName(string original, int maxLenght)
-        {
-            if (original.Length > 6)
-            {
-                return original.Substring(0, 5) + "..";
-            }
-            else
-            {
-                return original;
-            }
-        }
+
 
 
         private void TransferStarted(object sender, OutTransferEventArgs args)
         {
             for (int i = 0; i < CurrentSelectedFiles.Count; i++)
             {
-                if(CurrentSelectedFiles[i].fileStruct.FilePath == args.FilePath)
+                if(CurrentSelectedFiles[i].FileStructLocal.FilePath == args.FilePath)
                 {
                     //CurrentSelectedFiles[i].panel_Parent.BackColor = Color.Yellow;
                 }
@@ -384,10 +433,10 @@ namespace FileJump
             {
                 for (int i = 0; i < CurrentSelectedFiles.Count; i++)
                 {
-                    if (CurrentSelectedFiles[i].fileStruct.FilePath == args.FilePath)
+                    if (CurrentSelectedFiles[i].FileStructLocal.FilePath == args.FilePath)
                     {
                         CurrentSelectedFiles[i].panel_Parent.BackColor = Color.Transparent;
-                        CurrentSelectedFiles[i].CurrentState = FileQueueState.Finished;
+                        CurrentSelectedFiles[i].CurrentState = FileStatus.Finished;
                         CurrentSelectedFiles[i].pBox_Checkmark.Image = Resources.TransferResult_CheckMark;
 
                     }
@@ -397,10 +446,10 @@ namespace FileJump
             {
                 for (int i = 0; i < CurrentSelectedFiles.Count; i++)
                 {
-                    if (CurrentSelectedFiles[i].fileStruct.FilePath == args.FilePath)
+                    if (CurrentSelectedFiles[i].FileStructLocal.FilePath == args.FilePath)
                     {
                         CurrentSelectedFiles[i].panel_Parent.BackColor = Color.Transparent;
-                        CurrentSelectedFiles[i].CurrentState = FileQueueState.Finished;
+                        CurrentSelectedFiles[i].CurrentState = FileStatus.Finished;
                         CurrentSelectedFiles[i].pBox_Checkmark.Image = Resources.TransferResult_Cross;
                     }
                 }
@@ -418,13 +467,13 @@ namespace FileJump
             {
                 CurrentSelectedFiles[SelectedFileVisual].label_FileName.AutoSize = false;
                 CurrentSelectedFiles[SelectedFileVisual].panel_Parent.BackColor = Color.Transparent;
-                CurrentSelectedFiles[SelectedFileVisual].label_FileName.Text = ShortenFileName(CurrentSelectedFiles[SelectedFileVisual].fileStruct.FileName +
-                                                         CurrentSelectedFiles[SelectedFileVisual].fileStruct.FileExtension, 6);
+                CurrentSelectedFiles[SelectedFileVisual].label_FileName.Text = GUITools.ShortenFileName(CurrentSelectedFiles[SelectedFileVisual].FileStructLocal.FileName +
+                                                         CurrentSelectedFiles[SelectedFileVisual].FileStructLocal.FileExtension, 6);
             }
 
             CurrentSelectedFiles[id].label_FileName.AutoSize = true;
-            CurrentSelectedFiles[id].label_FileName.Text = CurrentSelectedFiles[id].fileStruct.FileName +
-                                                         CurrentSelectedFiles[id].fileStruct.FileExtension;
+            CurrentSelectedFiles[id].label_FileName.Text = CurrentSelectedFiles[id].FileStructLocal.FileName +
+                                                         CurrentSelectedFiles[id].FileStructLocal.FileExtension;
 
             CurrentSelectedFiles[id].panel_Parent.BackColor = Color.LightBlue;
             SelectedFileVisual = id;
@@ -490,7 +539,7 @@ namespace FileJump
 
             foreach (string file in files)
             {
-                FileStructure fStruct = new FileStructure();
+                LocalFileStructure fStruct = new LocalFileStructure();
                 try
                 {
                     FileInfo fInfo = new FileInfo(file);
@@ -526,7 +575,7 @@ namespace FileJump
                 foreach (String file in dialog_OpenFiles.FileNames)
                 {
 
-                    FileStructure fStruct = new FileStructure();
+                    LocalFileStructure fStruct = new LocalFileStructure();
                     try
                     {
                         FileInfo fInfo = new FileInfo(file);

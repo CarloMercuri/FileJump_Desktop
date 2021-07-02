@@ -31,7 +31,7 @@ namespace FileJump
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="fStruct"></param>
-        public static void SaveFileToLocalStorage(byte[] buffer, FileStructure fStruct)
+        public static void SaveFileToLocalStorage(byte[] buffer, LocalFileStructure fStruct)
         {
             string fullName = fStruct.FileName + fStruct.FileExtension;
             string filePath = Path.Combine(ProgramSettings.StorageFolderPath, fullName);

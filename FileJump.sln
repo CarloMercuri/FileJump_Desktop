@@ -5,7 +5,7 @@ VisualStudioVersion = 16.0.30709.132
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileJump", "FileJump\FileJump.csproj", "{C6A066B9-434E-4262-B37B-36DEB6E41489}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileJump_Network", "..\FileJump_Network\FileJump_Network\FileJump_Network.csproj", "{BCD6727C-EADB-41E3-A4F5-410300F57F20}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FileJump.Network", "..\FileJump_Network\FileJump_Network\FileJump.Network.csproj", "{BCD6727C-EADB-41E3-A4F5-410300F57F20}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

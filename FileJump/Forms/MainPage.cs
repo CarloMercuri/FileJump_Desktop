@@ -14,6 +14,9 @@ using FileJump.Properties;
 using Microsoft.Win32;
 using System.Runtime.InteropServices;
 using FileJump.Forms;
+using FileJump.Settings;
+using FileJump_Network.EventSystem;
+using FileJump_Network.Models;
 
 namespace FileJump
 {
@@ -59,42 +62,38 @@ namespace FileJump
         {
             InitializeComponent();
 
-            // Let's start up the udp listener
-            NetComm.InitializeNetwork();
+            label_LoggedInText.Visible = false;
+            panel_RegisterLogin.Visible = true;
 
             // Get the correct registry key for startup
             rkApp = Registry.CurrentUser.OpenSubKey("SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Run", true);
 
 
             // Settings
-           
-
 #if DEBUG
             ChangeDestinationFolder("C:/FileJumpFolder");
             ChangeDeviceName("CARLO_BB");
+            UserSettings.DeviceType = 1; // HARDCODED. Desktop application
+            startup_Checkbox.CheckState = CheckState.Unchecked;
 #else
 
-            if (Settings.Default["MachineName"].ToString() == "NULL")
+
+            UserSettings.DeviceType = 1; // HARDCODED. Desktop application
+
+            if (UserSettings.MachineName == "NULL")
             {
                 ChangeDeviceName(Environment.MachineName);
             }
-            else
-            {
-                ChangeDeviceName(Settings.Default["MachineName"].ToString());
-            }
 
-            if (!Directory.Exists(Properties.Settings.Default["DestinationFolder"].ToString()))
+            // If the destination folder has not been specified, use the default one (main folder / Incoming Files)
+
+            if (!Directory.Exists(UserSettings.DestinationFolder))
             {
                 ChangeDestinationFolder(Path.Combine(Directory.GetCurrentDirectory(), "Incoming Files"));
             }
-            else
-            {
-                ChangeDestinationFolder(Properties.Settings.Default["DestinationFolder"].ToString());
-            }
-#endif
 
-            // Check the startup setting
-            if ((bool)Settings.Default["RunOnStartup"] == true)
+             // Check the startup setting
+            if (UserSettings.RunOnStartUp == true)
             {
                 startup_Checkbox.CheckState = CheckState.Checked; // This also automatically runs AddToStartup which checks if it is running on startup,
             }                                                     // else it adds it.  
@@ -102,6 +101,10 @@ namespace FileJump
             {
                 startup_Checkbox.CheckState = CheckState.Unchecked; // This runs the remove check
             }
+
+#endif
+
+            NetComm.InitializeNetwork(UserSettings.MachineName, UserSettings.DeviceType, UserSettings.DestinationFolder);
 
             // Notifications settings
             tray_icon.BalloonTipShown += Tray_icon_BalloonTipShown;
@@ -113,14 +116,60 @@ namespace FileJump
             DataProcessor.IncomingTransferFinished += IncomingTransferFinished;
             DataProcessor.InboundTextTransferFinished += InboundTextTransferFinished;
 
+            ApiCommunication.LoginActionResult += LoginResultEvent;
+            ApiCommunication.LogoutActionResult += LogoutResultEvent;
+
+            // Form events
+            btn_OnlineFiles.Click += btn_OnlineStorage;
+
+            btn_Topbar_Close.MouseEnter += OnTopBarButtonEnter;
+            btn_Topbar_Close.MouseLeave += OnTopBarButtonLeave;
+            
+            btn_Topbar_Minimize.MouseEnter += OnTopBarButtonEnter;
+            btn_Topbar_Minimize.MouseLeave += OnTopBarButtonLeave;
+
+            // Some buttons settings
+            btn_Register.MouseEnter += (s, e) => btn_Register.Cursor = Cursors.Hand;
+            btn_Register.MouseLeave += (s, e) => btn_Register.Cursor = Cursors.Arrow;
+
+            btn_Login.MouseEnter += (s, e) => btn_Login.Cursor = Cursors.Hand;
+            btn_Login.MouseLeave += (s, e) => btn_Login.Cursor = Cursors.Arrow;
+
+            btn_Register.MouseClick += btn_Register_Click;
+            btn_Login.MouseClick += btn_Login_Click;
+
+
+
             // Reset the devices count and run a scan
             DevicesCount = 0;
             NetComm.ScoutNetworkDevices();
 
+            CheckIfShouldPerformLogin();
 
-           
+            panel_TopBar.Location = new Point(1, 1);
+            panel_TopBar.Size = new Size(this.Size.Width - 2, 23);
+
+        }
 
 
+
+
+        /////////////////////////// EVENTS ////////////////////////////////
+        ///
+        private void LogoutResultEvent(object sender, LogoutResultEventArgs args)
+        {
+            if (args.Successful)
+            {
+                LogOutAction();
+            }
+        }
+
+        private void LoginResultEvent(object sender, LoginResultEventArgs args)
+        {
+            if (args.Successful)
+            {
+                PerformSuccessfulLogin(args.AccountData);
+            }
         }
 
         private void InboundTextTransferFinished(object sender, InboundTextTransferEventArgs args)
@@ -133,7 +182,7 @@ namespace FileJump
             ShowBaloonTooltip("New message received!");
         }
 
-        
+
         private void IncomingTransferFinished(object sender, InboundTransferEventArgs args)
         {
             FileHandler.SaveFileToLocalStorage(args.FileBuffer, args.FileStructure);
@@ -153,6 +202,51 @@ namespace FileJump
             // Add it to the display list
             AddNewNetworkDevice(netArgs.device);
         }
+
+        private void CheckIfShouldPerformLogin()
+        {
+            // Self explanatory
+            if (!UserSettings.RememberLogin)
+            {
+                return;
+            }
+            
+            // Check if the email and pw are saved (should be at this point) and perform login
+            if(UserSettings.UserEmail.Length > 0 && UserSettings.UserPassword.Length > 0)
+            {
+                ApiCommunication.SendLoginRequest(UserSettings.UserEmail, UserSettings.UserPassword);
+            }
+        }
+
+        // Called from LoginPage.cs when a successful login is performed
+        public void PerformSuccessfulLogin(AccountInfoModel accountModel)
+        {
+            UserSettings.UserEmail = accountModel.Email;
+            UserSettings.UserFirstName = accountModel.FirstName;
+            UserSettings.UserLastName = accountModel.LastName;
+            UserSettings.UserAccessToken = accountModel.Accesstoken;
+            UserSettings.LoggedOn = true;
+
+            panel_RegisterLogin.Visible = false;
+            label_LoggedInText.Location = new Point(410, 32);
+            label_LoggedInText.Visible = true;
+            ChangeLoggedInText();
+        }
+
+        public void LogOutAction()
+        {
+            label_LoggedInText.Visible = false;
+            panel_RegisterLogin.Visible = true;
+            UserSettings.ClearUserSettings();
+        }
+
+        private void ChangeLoggedInText()
+        {
+            label_LoggedInText.Text = $"Logged in as:\n{UserSettings.UserFirstName} {UserSettings.UserLastName}";
+        }
+
+
+
 
         /// <summary>
         /// Returns the icon image associated with the specified device type
@@ -324,10 +418,8 @@ namespace FileJump
 
         private void ChangeDeviceName(string name)
         {
-            ProgramSettings.DeviceName = name;
-            Properties.Settings.Default["MachineName"] = name;
+            UserSettings.MachineName = name;
             label_DeviceName.Text = name;
-
         }
 
         private void ChangeDestinationFolder(string path)
@@ -337,8 +429,8 @@ namespace FileJump
                 Directory.CreateDirectory(path);
             }
 
-            ProgramSettings.StorageFolderPath = path;
-            Properties.Settings.Default["DestinationFolder"] = path;
+            UserSettings.DestinationFolder = path;
+
             label_ChosenFolder.Text = path;
         }
 
@@ -357,8 +449,7 @@ namespace FileJump
         {
             dialog_ChooseFolder.ShowDialog();
             string folderPath = dialog_ChooseFolder.SelectedPath;
-            ProgramSettings.StorageFolderPath = folderPath;
-            Properties.Settings.Default["DestinationFolder"] = folderPath;
+            UserSettings.DestinationFolder = folderPath;
             label_ChosenFolder.Text = folderPath;
         }
 
@@ -409,7 +500,7 @@ namespace FileJump
             {
                 ShowingMessages = true;
                 this.Width += expandWidth;
-                btn_ShowMessages.BackgroundImage = Resources.icon_expand_gray_left;
+                btn_ShowMessages.BackgroundImage = Resources.icon_arrow_left;
 
                 ShowMessagesList();
 
@@ -417,7 +508,7 @@ namespace FileJump
             {
                 ShowingMessages = false;
                 this.Width -= expandWidth;
-                btn_ShowMessages.BackgroundImage = Resources.icon_expand_gray_right;
+                btn_ShowMessages.BackgroundImage = Resources.icon_arrow_right;
             }
             
             
@@ -470,7 +561,8 @@ namespace FileJump
         {
             Panel mainPanel = new Panel()
             {
-                BackColor = Color.Gray,
+                //BackColor = Color.Gray,
+                BackColor = Color.FromArgb(255, 183, 210, 197),
                 Size = new Size(_control.Width - 5, 50)
             };
 
@@ -497,10 +589,11 @@ namespace FileJump
 
             Label lbl_date = new Label()
             {
-                Location = new Point(40, 0),
+                Location = new Point(70, 0),
                 TextAlign = ContentAlignment.MiddleCenter,
-                ForeColor = Color.Black,
-                BackColor = Color.Gray,
+                ForeColor = Color.White,
+                //BackColor = Color.Gray,
+                BackColor = Color.FromArgb(255, 58, 175, 118),
                 Text = msg.DateSent,
                 Height = 14,
             };
@@ -541,7 +634,7 @@ namespace FileJump
             {
                 Location = new Point(btn_CopyClipboard.Location.X + btn_CopyClipboard.Size.Width + 5, 8),
                 Size = new Size(35, 35),
-                BackgroundImage = Resources.icon_expand_gray_right,
+                BackgroundImage = Resources.icon_arrow_right,
                 BackgroundImageLayout = ImageLayout.Stretch,
                 Text = ""
             };
@@ -609,10 +702,143 @@ namespace FileJump
             tray_icon.Visible = true;
         }
 
+        private void OnTopBarButtonEnter(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+
+            if(btn == null)
+            {
+                return;
+            }
+
+            btn.BackColor = Color.FromArgb(255, 183, 210, 197);
+        }
+
+        private void OnTopBarButtonLeave(object sender, EventArgs e)
+        {
+            Button btn = (Button)sender;
+
+            if (btn == null)
+            {
+                return;
+            }
+
+            btn.BackColor = Color.Transparent;
+        }
+
         private void btn_Account_Click(object sender, EventArgs e)
         {
-            LoginPage login = new LoginPage();
-            login.ShowDialog();
+            if (UserSettings.LoggedOn)
+            {
+                UserAccountPage user_page = new UserAccountPage();
+                user_page.ShowDialog();
+            } else
+            {
+                LoginPage login_page = new LoginPage();
+                login_page.ShowDialog();
+            }
+
+
+            //RegistrationPage regis = new RegistrationPage();
+            //regis.ShowDialog();
+
+            //UserAccountPage uap = new UserAccountPage();
+            //uap.ShowDialog();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            //ApiCommunication.SendRegistrationData("cmercuri85@gmail.com", "lamezia");
+            //ApiCommunication.SendNewAccountRegistrationData("cmercuri85@gmail.com", "1H24w87lm", "Carlo", "Mercuri");
+            //ApiCommunication.SendChangePasswordRequest("Lolol", "asd");
+            //ApiCommunication.SendPasswordRecoveryRequest("cmercuri85@gmail.com");
+            //ApiCommunication.SendLoginRequest("cmercuri85@gmail.com", "1H24w87lm");
+            //ApiCommunication.SendRegistrationData("cmercuri85@gmail.com", "testPwpsosposz");
+            //ApiCommunication.SendGetTest();
+            //Console.WriteLine(UserSettings.RememberLogin);
+            //UserSettings.RememberLogin = false;
+            //Console.WriteLine(UserSettings.RememberLogin);
+
+            //Console.WriteLine(UserSettings.RememberLogin);
+            //UserSettings.RememberLogin = true;
+            //Console.WriteLine(UserSettings.RememberLogin);
+
+            //ApiCommunication.TestMyAss();
+
+            //ApiCommunication.GetThumbnail("test.jpg", UserSettings.UserAccessToken);
+            //ApiCommunication.RequestHostedFilesList(UserSettings.UserAccessToken);
+
+            //string[] fileList = Directory.GetFiles("C:/back/uptest");
+
+            //foreach (string s in fileList)
+            //{
+            //    ApiCommunication.SendFileAsync(s, UserSettings.UserAccessToken, 3);
+            //}
+
+            //ApiCommunication.SendFileAsync("C:/back/uptest/registrazione_utente.pdf", UserSettings.UserAccessToken, 3);
+            //ApiCommunication.SendFileAsync("C:/back/uptest/test.jpg", UserSettings.UserAccessToken, 3);
+
+            //ApiCommunication.SendFileAsync("C:/back/postman.exe", UserSettings.UserAccessToken, 3);
+            //ApiCommunication.DownloadFile("postman.exe", UserSettings.UserAccessToken);
+
+
+            TestForm tf = new TestForm();
+            tf.ShowDialog();
+
+
+            //ApiCommunication.GetThumbnail();
+        }
+
+        private void DrawArcTest()
+        {
+            panel_NetworkDevices.Invalidate();
+        }
+
+        private void TestPaint(object sender, PaintEventArgs e)
+        {
+            // Create pen.
+            Pen blackPen = new Pen(Color.Black, 6);
+
+            // Create rectangle to bound ellipse.
+            Rectangle rect = new Rectangle(100, 0, 100, 100);
+
+            // Create start and sweep angles on ellipse.
+            float startAngle = 45.0F;
+            float sweepAngle = 30.0F;
+
+            // Draw arc to screen.
+            e.Graphics.DrawArc(blackPen, rect, startAngle, sweepAngle);
+        }
+
+
+
+
+
+        private void btn_Login_Click(object sender, MouseEventArgs e)
+        {
+            LoginPage login_page = new LoginPage();
+            login_page.ShowDialog();
+        }
+
+        private void btn_Register_Click(object sender, MouseEventArgs e)
+        {
+            RegistrationPage r_page = new RegistrationPage();
+            r_page.ShowDialog();
+        }
+
+        private void btn_OnlineStorage(object sender, EventArgs e)
+        {
+            OnlineStoragePage pg = new OnlineStoragePage();
+            pg.ShowDialog();
+        }
+
+        private void btn_OnlineUpload_Click(object sender, EventArgs e)
+        {
+            FileUploadPage f_up = new FileUploadPage(this);
+            // Hide the main form
+            this.Hide();
+            // Show the Device Page as a dialog
+            f_up.ShowDialog();
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileJump.CustomControls;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -10,7 +11,87 @@ namespace FileJump
     public static class ImageEditing
     {
 
-      
+      /// <summary>
+      /// Returns a bitmap with a shadow added to it
+      /// </summary>
+      /// <param name="thumbnail"></param>
+      /// <param name="shadow_bitmap"></param>
+      /// <param name="width"></param>
+      /// <param name="height"></param>
+      /// <returns></returns>
+        public static Bitmap AddThumbnailShadow(Bitmap thumbnail, Bitmap shadow_bitmap)
+        {
+
+            int shadow_size_width = (Int32)(((decimal)thumbnail.Width / 100) * 10);
+            int shadow_size_height = (Int32)(((decimal)thumbnail.Height / 100) * 10);
+
+            Bitmap final = new Bitmap(thumbnail.Width + shadow_size_width, thumbnail.Height + shadow_size_height);
+            Color pickedColor = Color.White;
+
+
+            using (Graphics g = Graphics.FromImage(final))
+            {
+                g.DrawImage(shadow_bitmap, 0, 0, final.Width, final.Height);
+            }
+
+            for (int i = 0; i < thumbnail.Width; i++)
+            {
+                for (int j = 0; j < thumbnail.Height; j++)
+                {
+                    pickedColor = thumbnail.GetPixel(i, j);
+                    final.SetPixel(i, j, pickedColor);
+                }
+            }
+
+
+
+            return final;
+
+        }
+
+        public static Image DrawPanelShadow(int width, int height, int thickness)
+        {
+
+            int ShadowOffset = 0;
+            int ShadowColor = 169;
+            int ShadowAlpha = 20;
+
+            Bitmap bmp = new Bitmap(width, height);
+
+            using(Graphics g = Graphics.FromImage(bmp))
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    // Make concentric rounded rects to imitate shadow
+                     g.FillRoundedRectangle(new SolidBrush(Color.FromArgb(ShadowAlpha, ShadowColor, ShadowColor, ShadowColor)),
+                                            5,
+                                            5,
+                                            width - ShadowOffset,
+                                            height - ShadowOffset,
+                                            15);
+
+                    ShadowOffset += 1;
+                    ShadowAlpha += 5;
+                }
+               
+                
+            }
+
+            return bmp;
+        }
+
+        public static Bitmap DrawImageScaled(int width, int height, Bitmap sourceImage)
+        {
+            Bitmap bmp = new Bitmap(width, height);
+
+            using(Graphics graphics = Graphics.FromImage(bmp))
+            {
+                graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                graphics.DrawImage(sourceImage, 0, 0, bmp.Width, bmp.Height);
+            }
+
+            return bmp;
+        }
 
         /// <summary>
         /// Returns a bitmap with a SQUARE checkered background image, of the specified size
