@@ -52,6 +52,34 @@ namespace FileJump.GUI
             return newText;
         }
 
+        /// <summary>
+        /// Returns a version of the given text that fits into the given label width wise in pixels.
+        /// </summary>
+        /// <param name="original"></param>
+        /// <param name="label"></param>
+        /// <returns></returns>
+        public static string FitTextLenghtToWidth(string original, Font font, int width)
+        {
+            string newText = original;
+            int clipCount = 1;
+
+                
+
+            while (TextRenderer.MeasureText(newText, font).Width > width)
+            {
+                if (clipCount >= newText.Length)
+                {
+                    return "<ERROR>"; // Something went wrong with the width and the loop kept going. Safe way out
+                }
+
+                newText = ShortenFileName(original, original.Length - clipCount);
+                clipCount++;
+            }
+  
+
+            return newText;
+        }
+
         public static SizeF GetLabelTextLenght(string text, Label label)
         {
             using(Graphics g = Graphics.FromHwnd(label.Handle))

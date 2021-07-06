@@ -1,4 +1,5 @@
-﻿using System;
+﻿using FileJump.Forms;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -16,7 +17,8 @@ namespace FileJump
         {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new MainPage());
+            //Application.Run(new MainPage());
+            Application.Run(new MainAppForm());
         }
     }
 }

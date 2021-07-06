@@ -34,7 +34,7 @@ namespace FileJump.CustomControls
             // Draw the shadow
             e.Graphics.DrawImage(ShadowImage, new Point(0, 0));
 
-            e.Graphics.FillRoundedRectangle(new SolidBrush(_bgColor), 0, 0, this.Width - _shadowThickness, this.Height - _shadowThickness, 15);
+            e.Graphics.FillRoundedRectangle(new SolidBrush(_bgColor), 0, 0, this.Width - _shadowThickness, this.Height - _shadowThickness, 5);
         }
     }
 }

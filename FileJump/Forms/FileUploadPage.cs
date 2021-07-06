@@ -64,8 +64,8 @@ namespace FileJump.Forms
             CreateDragDropPanel();
 
             RoundedButton btn = new RoundedButton(60, 30);
-            btn.Location = new Point(600, 150);
-            btn.Size = new Size(60, 30);
+            btn.Location = new Point(500, 150);
+            btn.Size = new Size(100, 50);
             
 
             this.Controls.Add(btn);
@@ -138,7 +138,7 @@ namespace FileJump.Forms
             MainPanel.Location = new Point(20, 40);
             MainPanel.Size = new Size(400, 500);
 
-            MainPanel.Paint += MainPanelPaint;
+            //MainPanel.Paint += MainPanelPaint;
 
             this.Controls.Add(MainPanel);
 
@@ -193,6 +193,8 @@ namespace FileJump.Forms
             int _dividerHeight = 50;
             int _shadowThickness = 10;
             Rectangle DropInRectangle = new Rectangle(11, _dividerHeight + 1, this.Width - _shadowThickness - 20, this.Height - _shadowThickness - _dividerHeight - 1);
+
+            //LinearGradientBrush brush = new LinearGradientBrush(new Point())
 
             LinearGradientBrush grad_brush = new LinearGradientBrush(DropInRectangle,
                    Color.FromArgb(100, 0, 250, 250),
@@ -374,20 +376,25 @@ namespace FileJump.Forms
 
             if (pb == null) return;
 
-            Rectangle myRect = new Rectangle(0, 0, pb.Width, pb.Height);
-            LinearGradientBrush myLGBrush = new LinearGradientBrush(
-                myRect, Color.Blue, Color.Red, 0.0f, true);
+            int startx = this.Width / 2;
+            int starty = 0;
 
-            // Draw an ellipse to the screen using the LinearGradientBrush.
-            e.Graphics.FillEllipse(myLGBrush, myRect);
+            Rectangle rect = new Rectangle(0,
+                                           0,
+                                           this.Width,
+                                           this.Height);
 
-            // Create a triangular shaped brush with the peak at the center
-            // of the drawing area.
-            myLGBrush.SetBlendTriangularShape(.5f, 1.0f);
+            LinearGradientBrush grad_brush = new LinearGradientBrush(rect,
+                   Color.FromArgb(255, 0, 250, 250),
+                   Color.FromArgb(255, 255, 0, 250),
+                   LinearGradientMode.Vertical);
 
-            // Use the triangular brush to draw a second ellipse.
-            myRect.Y = pb.Height;
-            e.Graphics.FillEllipse(myLGBrush, myRect);
+
+
+            if (DrawMainPanelHighlight)
+            {
+                e.Graphics.FillRectangle(grad_brush, rect);
+            }
 
         }
 

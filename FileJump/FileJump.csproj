@@ -102,7 +102,13 @@
     <Compile Include="CustomControls\CustomFlowLayout.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomControls\FJAnimatedButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\GraphicsExtension.cs" />
+    <Compile Include="CustomControls\NetworkDevicePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\RoundedButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -116,6 +122,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Debugging\Debugger.cs" />
+    <Compile Include="FormElements\LocalDevicesFormElement.cs" />
+    <Compile Include="FormElements\SettingsFormElement.cs" />
     <Compile Include="Forms\FileUploadPage.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -133,6 +141,12 @@
     </Compile>
     <Compile Include="Forms\DevicePage.Designer.cs">
       <DependentUpon>DevicePage.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Forms\MainAppForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\MainAppForm.Designer.cs">
+      <DependentUpon>MainAppForm.cs</DependentUpon>
     </Compile>
     <Compile Include="Forms\OnlineStoragePage.cs">
       <SubType>Form</SubType>
@@ -159,10 +173,12 @@
       <DependentUpon>UserAccountPage.cs</DependentUpon>
     </Compile>
     <Compile Include="GUI\Constants.cs" />
+    <Compile Include="GUI\DarkFileDisplay.cs" />
     <Compile Include="GUI\DeviceGUIObject.cs" />
     <Compile Include="GUI\FileUploadInstance.cs" />
     <Compile Include="GUI\FileUploadVisual.cs" />
     <Compile Include="GUI\GUITools.cs" />
+    <Compile Include="GUI\HighlightPanel.cs" />
     <Compile Include="Settings\UserSettings.cs" />
     <Compile Include="Tools\FileHandler.cs" />
     <Compile Include="GUI\FileVisualDisplay.cs" />
@@ -190,6 +206,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\DevicePage.resx">
       <DependentUpon>DevicePage.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\MainAppForm.resx">
+      <DependentUpon>MainAppForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\MainPage.resx">
       <DependentUpon>MainPage.cs</DependentUpon>
@@ -261,6 +280,12 @@
     <None Include="Resources\BGs\drag_drop_BG_new.png" />
     <None Include="Resources\BGs\drag_drop_BG_dot.png" />
     <None Include="Resources\BGs\drag_drop_BG_Icon.png" />
+    <None Include="Resources\Icons\device_icon_pressed.png" />
+    <None Include="Resources\Icons\device_icon_normalpng.png" />
+    <None Include="Resources\Icons\device_panel_normal.png" />
+    <None Include="Resources\Icons\device_panel_pressed.png" />
+    <None Include="Resources\BGs\drag_drop_BG_new2.png" />
+    <None Include="Resources\Icons\file_cornice.png" />
     <Content Include="Resources\Icons\icon_desktop.png" />
     <None Include="Resources\Icons\icon_phone.png" />
     <None Include="Resources\Icons\icon_expand_right_big.png" />
@@ -268,6 +293,8 @@
     <None Include="Resources\Icons\icon_expand_gray_left_pressed.png" />
     <None Include="Resources\Icons\icon_expand_gray_right.png" />
     <None Include="Resources\Icons\icon_expand_gray_right_pressed.png" />
+    <None Include="Resources\Icons\icon_desktop_dark.png" />
+    <None Include="Resources\Icons\icon_phone_dark.png" />
     <Content Include="Resources\Icons\loadimage.jpg" />
   </ItemGroup>
   <ItemGroup>

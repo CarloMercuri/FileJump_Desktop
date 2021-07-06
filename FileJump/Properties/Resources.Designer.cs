@@ -83,6 +83,46 @@ namespace FileJump.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap device_icon_normal {
+            get {
+                object obj = ResourceManager.GetObject("device_icon_normal", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap device_icon_pressed {
+            get {
+                object obj = ResourceManager.GetObject("device_icon_pressed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap device_panel_normal {
+            get {
+                object obj = ResourceManager.GetObject("device_panel_normal", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap device_panel_pressed {
+            get {
+                object obj = ResourceManager.GetObject("device_panel_pressed", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap drag_drop_BG {
             get {
                 object obj = ResourceManager.GetObject("drag_drop_BG", resourceCulture);
@@ -133,9 +173,29 @@ namespace FileJump.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap drag_drop_BG_new2 {
+            get {
+                object obj = ResourceManager.GetObject("drag_drop_BG_new2", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap DragDropBackground {
             get {
                 object obj = ResourceManager.GetObject("DragDropBackground", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap file_cornice {
+            get {
+                object obj = ResourceManager.GetObject("file_cornice", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -186,6 +246,16 @@ namespace FileJump.Properties {
         internal static System.Drawing.Bitmap icon_desktop {
             get {
                 object obj = ResourceManager.GetObject("icon_desktop", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icon_desktop_dark {
+            get {
+                object obj = ResourceManager.GetObject("icon_desktop_dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -246,6 +316,16 @@ namespace FileJump.Properties {
         internal static System.Drawing.Bitmap icon_phone {
             get {
                 object obj = ResourceManager.GetObject("icon_phone", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap icon_phone_dark {
+            get {
+                object obj = ResourceManager.GetObject("icon_phone_dark", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

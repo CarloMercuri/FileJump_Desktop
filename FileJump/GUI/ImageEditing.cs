@@ -49,10 +49,12 @@ namespace FileJump
 
         }
 
+
+
         public static Image DrawPanelShadow(int width, int height, int thickness)
         {
 
-            int ShadowOffset = 0;
+            int ShadowOffset = 5;
             int ShadowColor = 169;
             int ShadowAlpha = 20;
 

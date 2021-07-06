@@ -46,3 +46,4 @@ C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.OnlineStoragePage.resources
 C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.RegistrationPage.resources
 C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.TestForm.resources
 C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.UserAccountPage.resources
+C:\dev\FileJump\FileJump\obj\Debug\FileJump.Forms.MainAppForm.resources
