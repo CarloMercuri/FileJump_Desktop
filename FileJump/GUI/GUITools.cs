@@ -10,6 +10,17 @@ namespace FileJump.GUI
 {
     public static class GUITools
     {
+        public static Color COLOR_Dividers_Light = Color.FromArgb(255, 77, 81, 99);
+        public static Color COLOR_Dividers_Dark = Color.FromArgb(255, 35, 37, 48);
+
+        public static Color COLOR_DarkMode_Dark = Color.FromArgb(255, 39, 41, 54);
+        public static Color COLOR_DarkMode_Light = Color.FromArgb(255, 49, 52, 67);
+        public static Color COLOR_DarkMode_Lighter = Color.FromArgb(255, 57, 61, 79);
+
+        public static Color COLOR_DarkMode_Text_Light = Color.FromArgb(255, 122, 129, 154);
+        public static Color COLOR_DarkMode_Text_Bright = Color.FromArgb(255, 162, 169, 214);
+
+        public static Color COLOR_Controls_Border = Color.FromArgb(255, 102, 109, 138);
         public static string ShortenFileName(string original, int maxLenght)
         {
             if (original.Length > maxLenght)
@@ -33,12 +44,9 @@ namespace FileJump.GUI
             string newText = original;
             int clipCount = 1;
 
-            Graphics g = Graphics.FromHwnd(label.Handle);
-            g.PageUnit = GraphicsUnit.Pixel;
-
             while (TextRenderer.MeasureText(newText, label.Font).Width > label.Width)
             {
-                if(clipCount >= newText.Length)
+                if(clipCount >= original.Length)
                 {
                     return "<ERROR>"; // Something went wrong with the width and the loop kept going. Safe way out
                 }
@@ -47,8 +55,7 @@ namespace FileJump.GUI
                 clipCount++;
             }
 
-            g.Dispose();
-
+   
             return newText;
         }
 

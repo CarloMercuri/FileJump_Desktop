@@ -102,6 +102,12 @@
     <Compile Include="CustomControls\CustomFlowLayout.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="CustomControls\CustomGeneralButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CustomControls\CustomProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="CustomControls\FJAnimatedButton.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -179,6 +185,7 @@
     <Compile Include="GUI\FileUploadVisual.cs" />
     <Compile Include="GUI\GUITools.cs" />
     <Compile Include="GUI\HighlightPanel.cs" />
+    <Compile Include="IFileDisplay.cs" />
     <Compile Include="Settings\UserSettings.cs" />
     <Compile Include="Tools\FileHandler.cs" />
     <Compile Include="GUI\FileVisualDisplay.cs" />
@@ -286,6 +293,7 @@
     <None Include="Resources\Icons\device_panel_pressed.png" />
     <None Include="Resources\BGs\drag_drop_BG_new2.png" />
     <None Include="Resources\Icons\file_cornice.png" />
+    <None Include="Resources\Icons\dark_logo_main.png" />
     <Content Include="Resources\Icons\icon_desktop.png" />
     <None Include="Resources\Icons\icon_phone.png" />
     <None Include="Resources\Icons\icon_expand_right_big.png" />

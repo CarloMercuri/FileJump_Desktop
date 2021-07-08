@@ -1,5 +1,6 @@
 ﻿using FileJump.GUI;
 using FileJump.Network;
+using FileJump.Network.EventSystem;
 using FileJump.Properties;
 using FileJump_Network.EventSystem;
 using System;

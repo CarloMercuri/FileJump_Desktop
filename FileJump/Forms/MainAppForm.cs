@@ -61,7 +61,7 @@ namespace FileJump.Forms
             // Events
 
 
-            //DataProcessor.IncomingTransferFinished += IncomingTransferFinished;
+            DataProcessor.IncomingTransferFinished += IncomingTransferFinished;
             //DataProcessor.InboundTextTransferFinished += InboundTextTransferFinished;
 
             //ApiCommunication.LoginActionResult += LoginResultEvent;
@@ -69,6 +69,8 @@ namespace FileJump.Forms
 
             // Default starting with Device panel
             LeftButtonPanels[0].IsHighlighted = true;
+
+
 
             CreateLocalDevicePanel();
 
@@ -124,20 +126,41 @@ namespace FileJump.Forms
 
         }
 
+        private void IncomingTransferFinished(object sender, InboundTransferEventArgs args)
+        {
+            FileHandler.SaveFileToLocalStorage(args.FileBuffer, args.FileStructure);
+            // Show the baloon tooltip
+            //BaloonToolTipDestination = 0;
+            //ShowBaloonTooltip("File(s) transfer complete");
+        }
+
 
 
         private void InitializeMainUI()
         {
+            // Set the overall background color of the program
+            this.BackColor = GUITools.COLOR_DarkMode_Light;
+
             //
             // The Left menu panel
             //
 
             panel_MainLeft.Location = new Point(0, 0);
             panel_MainLeft.Size = new Size((int)((decimal)this.Width / 4M), this.Height);
-            panel_MainLeft.BackColor = Color.FromArgb(255, 39, 41, 54);
+            panel_MainLeft.BackColor = GUITools.COLOR_DarkMode_Dark;
+
+            Panel panel_Logo = new Panel();
+            panel_Logo.Size = new Size((int)((decimal)panel_MainLeft.Width / 2), (int)((decimal)panel_MainLeft.Width / 2));
+            panel_Logo.Location = new Point(panel_MainLeft.Width / 2 - panel_Logo.Width / 2, 20);
+            panel_Logo.BackgroundImage = Properties.Resources.dark_logo_main;
+            panel_Logo.BackgroundImageLayout = ImageLayout.Stretch;
+
+            panel_MainLeft.Controls.Add(panel_Logo);
+
+            panel_MainLeft.Paint += PaintLeftPanel;
 
             int LeftButtonSpacing = 50;
-            int LeftButtonsStartY = 160;
+            int LeftButtonsStartY = 200;
             int curY = LeftButtonsStartY;
 
 
@@ -194,6 +217,68 @@ namespace FileJump.Forms
 
         }
 
+        private void CreateTitlePanel(string text, Panel MainPanel)
+        {
+            Panel panel_Main = new Panel();
+            panel_Main.Size = new Size((int)((decimal)MainPanel.Width / 2M), 70);
+            panel_Main.Location = new Point(MainPanel.Width / 2 - panel_Main.Width / 2, 28); // 23 is the height of the TopBar, have to hard code it here for now
+            panel_Main.BackColor = Color.Transparent;
+
+            panel_Main.Paint += (sender, args) =>
+            {
+                args.Graphics.DrawRectangle(new Pen(GUITools.COLOR_Controls_Border, 1), new Rectangle(0, 0, panel_Main.Width - 1, panel_Main.Height - 1));
+                args.Graphics.DrawRectangle(new Pen(GUITools.COLOR_Dividers_Dark, 5), new Rectangle(1, 1, panel_Main.Width - 6, panel_Main.Height - 6));
+            };
+
+            Label label_Text = new Label();
+            label_Text.AutoSize = true;
+            label_Text.Font = new Font("Arial", 22, FontStyle.Bold, GraphicsUnit.Pixel);
+            label_Text.Text = "Local File Transfer";
+
+            Size textSize = TextRenderer.MeasureText(label_Text.Text, label_Text.Font);
+
+            label_Text.Location = new Point((panel_Main.Width / 2) - textSize.Width / 2,
+                (panel_Main.Height / 2) - textSize.Height / 2);
+
+            label_Text.ForeColor = GUITools.COLOR_DarkMode_Text_Light;
+            panel_Main.Controls.Add(label_Text);
+
+            MainPanel.Controls.Add(panel_Main);
+        }
+
+        private void PaintLeftPanel(object sender, PaintEventArgs e)
+        {
+            int div_Horizontal_Height = 170;
+            int thickness = 1;
+            //Pen lightPen = new Pen(GUITools.COLOR_Dividers_Light, thickness);
+            Pen lightPen = new Pen(GUITools.COLOR_Dividers_Light, thickness);
+            Pen darkPen = new Pen(GUITools.COLOR_Dividers_Dark, thickness);
+            Pen fillPen = new Pen(Color.FromArgb(255, 25, 27, 38), thickness);
+
+            // Bottom light
+            e.Graphics.DrawRectangle(lightPen, new Rectangle(-2,
+                                                             div_Horizontal_Height,
+                                                             panel_MainLeft.Width - thickness,
+                                                             panel_MainLeft.Height - div_Horizontal_Height + 10));
+
+
+            // Top light
+            e.Graphics.DrawRectangle(lightPen, new Rectangle(-2,
+                                                             -2,
+                                                             panel_MainLeft.Width - thickness, 
+                                                             div_Horizontal_Height + 2 - thickness * 2));
+
+            // Vertical right light line
+            e.Graphics.DrawLine(lightPen, new Point(panel_MainLeft.Width - thickness, 0), new Point(panel_MainLeft.Width - thickness, panel_MainLeft.Height));
+
+            // Fillings
+            e.Graphics.DrawLine(fillPen, new Point(0, div_Horizontal_Height - thickness ), new Point(panel_MainLeft.Width - thickness * 2, div_Horizontal_Height - thickness ));
+            e.Graphics.DrawLine(fillPen, new Point(panel_MainLeft.Width - thickness * 2, 0), new Point(panel_MainLeft.Width - thickness * 2, panel_MainLeft.Height));
+
+
+
+        }
+
         private HighlightPanel CreateLeftButton(string text, Point location, int id)
         {
             HighlightPanel hPanel = new HighlightPanel();
@@ -216,7 +301,7 @@ namespace FileJump.Forms
             Label label1 = new Label();
             label1.Font = new Font("Arial", 16, FontStyle.Bold, GraphicsUnit.Pixel);
             label1.Location = new Point(50, panel1.Height / 3); // 21 is the max size of the highlight panel, so little more than that
-            label1.ForeColor = Color.FromArgb(255, 122, 129, 154);
+            label1.ForeColor = GUITools.COLOR_DarkMode_Text_Light;
             label1.Width = panel1.Width - label1.Location.X;
             label1.Text = text;
 
@@ -313,6 +398,8 @@ namespace FileJump.Forms
                                            this.Width - panel_MainLeft.Width,
                                            this.Height - panel_TopBar.Height);
 
+            CreateTitlePanel("Local File Transfer", CurrentActivePagePanel);
+
             this.Controls.Add(CurrentActivePagePanel);
         }
 
@@ -369,6 +456,7 @@ namespace FileJump.Forms
         {
             panel_TopBar.Location = new Point(panel_MainLeft.Location.X + panel_MainLeft.Width, 0);
             panel_TopBar.Size = new Size(this.Width - panel_MainLeft.Width, 23);
+            panel_TopBar.BackColor = GUITools.COLOR_Dividers_Light;
             panel_TopBar.MouseMove += TopBarMouseMove;
             btn_Topbar_Close.Location = new Point(btn_Topbar_Close.Parent.Width - btn_Topbar_Close.Size.Width, 0);
             btn_Topbar_Minimize.Location = new Point(btn_Topbar_Close.Location.X - btn_Topbar_Minimize.Size.Width, 0);

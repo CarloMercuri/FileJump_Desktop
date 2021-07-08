@@ -9,7 +9,7 @@ using System.Windows.Forms;
 
 namespace FileJump.CustomControls
 {
-    public class RoundedProgressBar : Panel
+    public class CustomProgressBar : Panel
     {
         private int _percent;
         public int Percentage
@@ -25,12 +25,10 @@ namespace FileJump.CustomControls
         public Color ProgressBarColor { get; set; } = Color.Red;
 
 
-        public RoundedProgressBar()
+        public CustomProgressBar()
             : base()
         {
             this.SetStyle(ControlStyles.UserPaint, true);
-            this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-            this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
         }
 
         private void UpdatePercentage(int value)
@@ -41,16 +39,16 @@ namespace FileJump.CustomControls
 
         protected override void OnPaint(PaintEventArgs e)
         {
-            
-            e.Graphics.SmoothingMode = SmoothingMode.AntiAlias;
+            Graphics g = e.Graphics;
+            g.SmoothingMode = SmoothingMode.AntiAlias;
 
             // Draw the background bar
-            e.Graphics.FillRoundedRectangle(new SolidBrush(BackgroundBarColor), 0, 0, this.Width, this.Height, 15);
+            g.FillRectangle(new SolidBrush(BackgroundBarColor), new Rectangle(0, 0, this.Width, this.Height));
 
             // Draw the progress bar
-            e.Graphics.FillRoundedRectangle(new SolidBrush(ProgressBarColor), 0, 0, (int)(((decimal)this.Width / 100) * _percent), this.Height, 15);
+            g.FillRectangle(new SolidBrush(ProgressBarColor), 0, 0, (int)(((decimal)this.Width / 100) * _percent), this.Height);
 
-
+            base.OnPaint(e);
 
         }
     }
