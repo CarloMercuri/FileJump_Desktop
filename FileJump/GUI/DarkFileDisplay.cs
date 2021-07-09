@@ -42,18 +42,22 @@ namespace FileJump.GUI
 
         private List<Action> ClickActionsList = new List<Action>();
 
-        public DarkFileDisplay(int width, int height, Bitmap thumbnail, bool framed, string fileName)
+        public DarkFileDisplay(int width, int height, Bitmap thumbnail, bool framed, string fileName, Control target)
         {
             MainSize = new Size(width, height);
             Thumbnail = thumbnail;
             Framed = framed;
             FileName = fileName;
 
+
+
             int thumbBottomY = height - (int)((decimal)height / 3.4M);
 
             panel_Background = new Panel();
             panel_Background.Size = MainSize;
             panel_Background.Paint += PaintBackgroundPanel;
+
+            target.Controls.Add(panel_Background);
 
             if (framed)
             {
@@ -76,13 +80,13 @@ namespace FileJump.GUI
                     PaintBorder = true;
                     panel_Background.Invalidate();
                 }
-               
+
             };
 
             panel_MouseEvents.MouseLeave += (sender, args) =>
             {
-                if(!IsSelected)
-                panel_Background.BackColor = Color.Transparent;
+                if (!IsSelected)
+                    panel_Background.BackColor = Color.Transparent;
 
                 PaintBorder = false;
                 panel_Background.Invalidate();
@@ -90,7 +94,7 @@ namespace FileJump.GUI
 
             panel_MouseEvents.MouseClick += (sender, args) =>
             {
-                foreach(Action a in ClickActionsList)
+                foreach (Action a in ClickActionsList)
                 {
                     a.Invoke();
                 }
@@ -108,7 +112,7 @@ namespace FileJump.GUI
             int p_width;
             int p_height;
 
-            if(thumbnail.Width > thumbnail.Height)
+            if (thumbnail.Width > thumbnail.Height)
             {
                 p_width = (int)(((decimal)MainSize.Width / 100M) * 75);
                 p_height = (int)(((decimal)MainSize.Height / 100M) * 40);
@@ -129,14 +133,14 @@ namespace FileJump.GUI
 
             pBox_Thumbnail.Size = new Size(p_width, p_height);
             pBox_Thumbnail.SizeMode = PictureBoxSizeMode.StretchImage;
-            pBox_Thumbnail.Location = new Point((panel_Background.Width / 2) - p_width / 2 , thumbBottomY - p_height);
+            pBox_Thumbnail.Location = new Point((panel_Background.Width / 2) - p_width / 2, thumbBottomY - p_height);
 
             // Goal: The bottom of the image is always at the same Y coordinate.
 
-
-
             pBox_Thumbnail.Image = ImageEditing.DrawImageScaled(pBox_Thumbnail.Width, pBox_Thumbnail.Height, thumbnail);
-           // pBox_Thumbnail.Image = thumbnail;
+
+            //pBox_Thumbnail.Image = ImageEditing.DrawImageScaled(pBox_Thumbnail.Width, pBox_Thumbnail.Height, thumbnail);
+            // pBox_Thumbnail.Image = thumbnail;
 
             panel_Background.Controls.Add(pBox_Thumbnail);
 
@@ -170,12 +174,18 @@ namespace FileJump.GUI
             progress_Download.Visible = true;
 
             panel_Background.Controls.Add(progress_Download);
-            
+
 
 
             // Always as last thing
             panel_MouseEvents.BringToFront();
         }
+
+        public void CreateThumbnails()
+        {
+
+        }
+
 
         private void PaintBackgroundPanel(object sender, PaintEventArgs e)
         {

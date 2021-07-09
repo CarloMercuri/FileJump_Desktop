@@ -5,6 +5,7 @@ using System.Drawing.Drawing2D;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using FileJump.CustomControls;
@@ -318,7 +319,8 @@ namespace FileJump.FormElements
 
 
 
-            DarkFileDisplay dfd = new DarkFileDisplay(width, height, icon, false, file_struct.FullName);
+            DarkFileDisplay dfd = new DarkFileDisplay(width, height, icon, false, file_struct.FullName, panel_FlowLayoutFiles);
+
             dfd.FileStructure = file_struct;
 
             dfd.ActionOnClick(() =>
@@ -326,14 +328,11 @@ namespace FileJump.FormElements
                 FileIconClick(dfd);
             });
 
-
-
-            dfd.AddToControl(panel_FlowLayoutFiles);
+            //dfd.AddToControl(panel_FlowLayoutFiles);
 
             FileDisplayList.Add(dfd);
 
             icon.Dispose();
-
         }
 
         private void FileIconClick(DarkFileDisplay dfd)
@@ -565,6 +564,13 @@ namespace FileJump.FormElements
             return DragDropBackgroundPanel;
         }
 
+        //private void ProcessFileArrayThread(string[] paths)
+        //{
+        //    var t = new Thread(() => ProcessFileArray(paths));
+        //    t.Start();
+
+        //}
+
         private void ProcessFileArray(string[] paths)
         {
             CreateFileUploadVisual();
@@ -607,6 +613,7 @@ namespace FileJump.FormElements
             }
 
             ProcessFileArray(dialog_OpenFiles.FileNames);
+            
         }
 
         private void DragDropPaint(object sender, PaintEventArgs p)
