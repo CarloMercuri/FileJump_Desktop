@@ -312,8 +312,10 @@ namespace FileJump.FormElements
             }
             else
             {
-                icon= Icon.ExtractAssociatedIcon(file_struct.FilePath).ToBitmap();
+                icon = Icon.ExtractAssociatedIcon(file_struct.FilePath).ToBitmap();
             }
+
+
 
 
             DarkFileDisplay dfd = new DarkFileDisplay(width, height, icon, false, file_struct.FullName);
@@ -583,6 +585,7 @@ namespace FileJump.FormElements
                 fStruct.FileSize = fInfo.Length;
                 fStruct.FullName = fInfo.Name;
                 fStruct.FileID = id;
+                fStruct.FileSize = fInfo.Length;
                 AddNewQueuedFile(fStruct);
                 id++;
             }
@@ -677,7 +680,8 @@ namespace FileJump.FormElements
             //Sift through the files to see if there are some waiting to be sent
             for (int i = 0; i < FileDisplayList.Count; i++)
             {
-                if (FileDisplayList[i].FileStructure.FileStatus == FileStatus.Inactive)
+                if (FileDisplayList[i].FileStructure.FileStatus == FileStatus.Inactive ||
+                    FileDisplayList[i].FileStructure.FileStatus == FileStatus.QueuedForDownload)
                 {
                     FileDisplayList[i].FileStructure.FileStatus = FileStatus.QueuedForDownload;
                     UploadList.Add(FileDisplayList[i].FileStructure);

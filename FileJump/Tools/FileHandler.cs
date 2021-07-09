@@ -42,6 +42,7 @@ namespace FileJump
             {
                 file.Write(buffer, 0, buffer.Length);
             }
+
         }
 
         /// <summary>
