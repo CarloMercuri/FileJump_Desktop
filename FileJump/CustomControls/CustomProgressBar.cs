@@ -33,6 +33,8 @@ namespace FileJump.CustomControls
 
         private void UpdatePercentage(int value)
         {
+            if (value > 100) value = 100;
+            if (value < 0) value = 0;
             this._percent = value;
             this.Invalidate();
         }

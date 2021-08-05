@@ -55,14 +55,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="FileJump.exe" size="1927080">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="FileJump.exe" size="1954728">
       <assemblyIdentity name="FileJump" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>jZ0fSppGkHiYdGDk1nFgAlw1zQGbu67z7ypJDKQc25o=</dsig:DigestValue>
+        <dsig:DigestValue>09DOOvfuGJMOn7IcsOvk2atkrkvjPEsdYWrkJWRF/2w=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>
@@ -74,7 +74,7 @@
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>l0Tm0EHrHqKSX2gNNFgkQb/JwC6LRku20noGJYO9Jao=</dsig:DigestValue>
+        <dsig:DigestValue>g/5bpBXd/wP85NEfnfsPEPmXXq4dq3v8nG2qUYZaUD4=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

@@ -194,7 +194,7 @@ namespace FileJump
             this.label4.ForeColor = System.Drawing.Color.White;
             this.label4.Location = new System.Drawing.Point(725, 155);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(131, 28);
+            this.label4.Size = new System.Drawing.Size(105, 22);
             this.label4.TabIndex = 12;
             this.label4.Text = "Messages";
             // 

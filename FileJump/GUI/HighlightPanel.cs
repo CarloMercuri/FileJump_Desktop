@@ -13,5 +13,6 @@ namespace FileJump.GUI
         public Label TextLabel { get; set; }
         public Panel PopupPanel { get; set; }
         public bool IsHighlighted { get; set; }
+        public bool IsSelected { get; set; }
     }
 }

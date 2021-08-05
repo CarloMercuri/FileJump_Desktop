@@ -104,7 +104,7 @@ namespace FileJump
 
 #endif
 
-            NetComm.InitializeNetwork(UserSettings.MachineName, UserSettings.DeviceType, UserSettings.DestinationFolder);
+            NetComm.InitializeNetwork(UserSettings.MachineName, UserSettings.DeviceType, UserSettings.DestinationFolder, new FileHandler());
 
             // Notifications settings
             tray_icon.BalloonTipShown += Tray_icon_BalloonTipShown;
@@ -175,7 +175,8 @@ namespace FileJump
         private void InboundTextTransferFinished(object sender, InboundTextTransferEventArgs args)
         {
             // Add the message to the database
-            FileHandler.AddNewMessageToXML(args.Message, DateTime.Now.ToString());
+            FileHandler _fHandler = new FileHandler();
+            _fHandler.AddNewMessageToXML(args.Message, DateTime.Now.ToString());
             
             // Show the baloon tooltip
             BaloonToolTipDestination = 1;
@@ -185,7 +186,8 @@ namespace FileJump
 
         private void IncomingTransferFinished(object sender, InboundTransferEventArgs args)
         {
-            FileHandler.SaveFileToLocalStorage(args.FileBuffer, args.FileStructure);
+            FileHandler _fHandler = new FileHandler();
+            _fHandler.SaveFileToLocalStorage(args.FileBuffer, args.FileStructure);
             // Show the baloon tooltip
             BaloonToolTipDestination = 0;
             ShowBaloonTooltip("File(s) transfer complete");
@@ -577,7 +579,8 @@ namespace FileJump
             
             btn_Delete.Click += (sender, args) =>
             {
-                FileHandler.RemoveXmlDatabaseElement(msg.ID);
+                FileHandler _fHandler = new FileHandler();
+                _fHandler.RemoveXmlDatabaseElement(msg.ID);
                 // Refresh the visual
                 this.Controls.Remove(Messages_ParentPanel);
                 ShowMessagesList();
@@ -651,7 +654,8 @@ namespace FileJump
 
         private List<TextMessage> LoadMessages()
         {
-            return FileHandler.ReadXmlDatabase();
+            FileHandler _fHandler = new FileHandler();
+            return _fHandler.ReadXmlDatabase();
         }
 
         private void ExpandText(string txt)

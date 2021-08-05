@@ -49,8 +49,8 @@ namespace FileJump.Forms
             this.label_Response = new System.Windows.Forms.Label();
             this.panel_main = new System.Windows.Forms.Panel();
             this.panel_Success = new System.Windows.Forms.Panel();
-            this.mainTextBox = new System.Windows.Forms.TextBox();
             this.btn_CloseForm = new System.Windows.Forms.Button();
+            this.mainTextBox = new System.Windows.Forms.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.panel_main.SuspendLayout();
             this.panel_Success.SuspendLayout();
@@ -257,7 +257,7 @@ namespace FileJump.Forms
             this.panel_main.Controls.Add(this.Input_LastName);
             this.panel_main.Controls.Add(this.Input_Password_01);
             this.panel_main.Controls.Add(this.label4);
-            this.panel_main.Location = new System.Drawing.Point(12, 156);
+            this.panel_main.Location = new System.Drawing.Point(34, 155);
             this.panel_main.Name = "panel_main";
             this.panel_main.Size = new System.Drawing.Size(420, 552);
             this.panel_main.TabIndex = 32;
@@ -266,10 +266,25 @@ namespace FileJump.Forms
             // 
             this.panel_Success.Controls.Add(this.btn_CloseForm);
             this.panel_Success.Controls.Add(this.mainTextBox);
-            this.panel_Success.Location = new System.Drawing.Point(404, 65);
+            this.panel_Success.Location = new System.Drawing.Point(573, 93);
             this.panel_Success.Name = "panel_Success";
             this.panel_Success.Size = new System.Drawing.Size(381, 532);
             this.panel_Success.TabIndex = 33;
+            // 
+            // btn_CloseForm
+            // 
+            this.btn_CloseForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(157)))), ((int)(((byte)(88)))));
+            this.btn_CloseForm.FlatAppearance.BorderSize = 0;
+            this.btn_CloseForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btn_CloseForm.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.btn_CloseForm.ForeColor = System.Drawing.Color.White;
+            this.btn_CloseForm.Location = new System.Drawing.Point(125, 339);
+            this.btn_CloseForm.Name = "btn_CloseForm";
+            this.btn_CloseForm.Size = new System.Drawing.Size(128, 53);
+            this.btn_CloseForm.TabIndex = 11;
+            this.btn_CloseForm.Text = "Close";
+            this.btn_CloseForm.UseVisualStyleBackColor = false;
+            this.btn_CloseForm.Click += new System.EventHandler(this.btn_CloseForm_Click);
             // 
             // mainTextBox
             // 
@@ -288,26 +303,11 @@ namespace FileJump.Forms
     " the specified Email,\r\nfollow the link to activate your account and start\r\nuploa" +
     "ding your files!";
             // 
-            // btn_CloseForm
-            // 
-            this.btn_CloseForm.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(15)))), ((int)(((byte)(157)))), ((int)(((byte)(88)))));
-            this.btn_CloseForm.FlatAppearance.BorderSize = 0;
-            this.btn_CloseForm.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btn_CloseForm.Font = new System.Drawing.Font("Microsoft Sans Serif", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.btn_CloseForm.ForeColor = System.Drawing.Color.White;
-            this.btn_CloseForm.Location = new System.Drawing.Point(125, 339);
-            this.btn_CloseForm.Name = "btn_CloseForm";
-            this.btn_CloseForm.Size = new System.Drawing.Size(128, 53);
-            this.btn_CloseForm.TabIndex = 11;
-            this.btn_CloseForm.Text = "Close";
-            this.btn_CloseForm.UseVisualStyleBackColor = false;
-            this.btn_CloseForm.Click += new System.EventHandler(this.btn_CloseForm_Click);
-            // 
             // RegistrationPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(451, 725);
+            this.ClientSize = new System.Drawing.Size(1067, 725);
             this.Controls.Add(this.panel_Success);
             this.Controls.Add(this.panel_main);
             this.Controls.Add(this.pictureBox1);

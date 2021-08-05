@@ -66,7 +66,6 @@ namespace FileJump.Forms
 
         private void FileDeletedResponse(object sender, FileDeleteRequestEventArgs e)
         {
-            Console.WriteLine("delete event id " + e.ID);
             if (!e.Successful)
             {
                 return;

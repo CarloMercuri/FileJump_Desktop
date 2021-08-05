@@ -3,6 +3,8 @@ using FileJump.FormElements;
 using FileJump.GUI;
 using FileJump.Network;
 using FileJump.Settings;
+using FileJump_Network.EventSystem;
+using FileJump_Network.Models;
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
@@ -42,9 +44,14 @@ namespace FileJump.Forms
         private HighlightPanel[] LeftButtonPanels;
 
         // Main 
-
+        private Panel DynamicPagePanel { get; set; }
         private Panel CurrentActivePagePanel { get; set; }
+
         private int CurrentSelectedPage { get; set; }
+
+        private bool IsBaloonTipActive { get; set; }
+
+        private int BaloonToolTipType { get; set; } = 0; // 0 = folder, 1 = messages
 
 
         public MainAppForm()
@@ -54,7 +61,7 @@ namespace FileJump.Forms
 
 
 
-            InitializeMainUI();
+
 
             InitializeNetwork();
 
@@ -68,17 +75,33 @@ namespace FileJump.Forms
             //ApiCommunication.LogoutActionResult += LogoutResultEvent;
 
             // Default starting with Device panel
-            LeftButtonPanels[0].IsHighlighted = true;
+           
 
 
+            // UI 
 
-            CreateLocalDevicePanel();
+            InitializeMainUI(); // Left panel, topbar, etc
 
-            CurrentSelectedPage = 0;
+            CreateDynamicPanel(); // The panel that holds the main pages
+            ChangePage(0); // Local device
+
 
             TickTimer.Tick += TickTock;
             TickTimer.Start();
+
+            // Notifications settings
+            tray_Icon.BalloonTipShown += Tray_icon_BalloonTipShown;
+            tray_Icon.BalloonTipClosed += Tray_icon_BalloonTipClosed;
+            tray_Icon.BalloonTipClicked += Tray_icon_BalloonTipClicked;
+
+            ApiCommunication.LoginActionResult += LoginResultEvent;
+            ApiCommunication.LogoutActionResult += LogoutResultEvent;
+
+            UserSettings.LoggedOn = false;
+            CheckIfShouldPerformLogin();
         }
+
+
 
         private void InitializeNetwork()
         {
@@ -120,7 +143,7 @@ namespace FileJump.Forms
 
 #endif
 
-            NetComm.InitializeNetwork(UserSettings.MachineName, UserSettings.DeviceType, UserSettings.DestinationFolder);
+            NetComm.InitializeNetwork(UserSettings.MachineName, UserSettings.DeviceType, UserSettings.DestinationFolder, new FileHandler());
 
 
 
@@ -128,10 +151,9 @@ namespace FileJump.Forms
 
         private void IncomingTransferFinished(object sender, InboundTransferEventArgs args)
         {
-            FileHandler.SaveFileToLocalStorage(args.FileBuffer, args.FileStructure);
             // Show the baloon tooltip
-            //BaloonToolTipDestination = 0;
-            //ShowBaloonTooltip("File(s) transfer complete");
+            BaloonToolTipType = 0;
+            ShowBaloonTooltip("File(s) received");
         }
 
 
@@ -164,7 +186,7 @@ namespace FileJump.Forms
             int curY = LeftButtonsStartY;
 
 
-            LeftButtonPanels = new HighlightPanel[4];
+            LeftButtonPanels = new HighlightPanel[5];
 
             HighlightPanel hp1 =  CreateLeftButton("Local Devices", new Point(0, curY), 0);
 
@@ -201,10 +223,17 @@ namespace FileJump.Forms
 
             curY += 150;
 
-            HighlightPanel hp4 = CreateLeftButton("Settings", new Point(0, curY), 3);
+            HighlightPanel hp4 = CreateLeftButton("Account", new Point(0, curY), 3);
 
             panel_MainLeft.Controls.Add(hp4.MainPanel);
             LeftButtonPanels[3] = hp4;
+
+            curY += LeftButtonSpacing;
+
+            HighlightPanel hp5 = CreateLeftButton("Settings", new Point(0, curY), 4);
+
+            panel_MainLeft.Controls.Add(hp5.MainPanel);
+            LeftButtonPanels[4] = hp5;
 
 
 
@@ -342,72 +371,152 @@ namespace FileJump.Forms
 
         }
 
-        private void LeftButtonClickEvent(int id)
+        public void LoadAccountPage(string subpage)
         {
-            Console.WriteLine($"clicked: {id}");
-            if (CurrentSelectedPage == id) return;
+            for (int i = 0; i < LeftButtonPanels.Length; i++)
+            {
+                LeftButtonPanels[i].IsHighlighted = false;
+                LeftButtonPanels[i].IsSelected = false;
+            }
 
-            switch (id)
+            LeftButtonPanels[3].IsHighlighted = true;
+            LeftButtonPanels[3].IsSelected = true;
+
+            CurrentSelectedPage = 3;
+
+            DynamicPagePanel.Controls.Clear();
+
+            AccountFormElement sfe = new AccountFormElement();
+
+            int id = -1;
+
+            // Failsafe. if id stays -1, it loads the main page anyway
+            if (subpage.Equals("Registration")) id = 0;
+
+            if (subpage.Equals("Login")) id = 1;
+
+            CurrentActivePagePanel =  sfe.CreateAccountPanel(new Point(0, 0),
+                                           DynamicPagePanel.Width,
+                                           DynamicPagePanel.Height,
+                                           this, id);
+
+            DynamicPagePanel.Controls.Add(CurrentActivePagePanel);
+
+
+
+
+        }
+
+        private void ChangePage(int pageID)
+        {
+            if (pageID >= LeftButtonPanels.Length) return;
+
+            for (int i = 0; i < LeftButtonPanels.Length; i++)
+            {
+                LeftButtonPanels[i].IsHighlighted = false;
+                LeftButtonPanels[i].IsSelected = false;
+            }
+
+            LeftButtonPanels[pageID].IsHighlighted = true;
+            LeftButtonPanels[pageID].IsSelected = true;
+
+            CurrentSelectedPage = pageID;
+
+            DynamicPagePanel.Controls.Clear();
+
+            switch (pageID)
             {
                 case 0: // LOCAL DEVICES
-                    CreateLocalDevicePanel();
-                    CurrentSelectedPage = id;
+                   CurrentActivePagePanel = CreateLocalDevicePanel();
                     break;
 
-                case 3: // SETTINGS
-                    CreateSettingsPanel();
-                    CurrentSelectedPage = id;
+                case 1: // ONLINE STORAGE
+                    CurrentActivePagePanel = CreateOnlineStoragePage();
+                    break;
+                case 3: // ACCOUNT PAGE
+                    CurrentActivePagePanel = CreateAccountPanel(); 
+                    break;
+
+                case 4: // SETTINGS
+                    CurrentActivePagePanel = CreateSettingsPanel();
                     break;
                 default:
+                    CurrentActivePagePanel = null;
                     break;
 
             }
+
+            DynamicPagePanel.Controls.Add(CurrentActivePagePanel);
         }
 
-        private void CreateSettingsPanel()
+        private void LeftButtonClickEvent(int id)
         {
-            if (CurrentActivePagePanel != null)
-            {
-                CurrentActivePagePanel.Visible = false;
-                CurrentActivePagePanel = null;
-            }
+            if (CurrentSelectedPage == id) return;
 
+            ChangePage(id);
+        }
+
+        private void CreateDynamicPanel()
+        {
+            DynamicPagePanel = new Panel();
+            DynamicPagePanel.Location = new Point(panel_MainLeft.Width, panel_TopBar.Height);
+            DynamicPagePanel.Size = new Size(this.Width - panel_MainLeft.Width,
+                                           this.Height - panel_TopBar.Height);
+            this.Controls.Add(DynamicPagePanel);
+        }
+
+        private Panel CreateOnlineStoragePage()
+        {
+
+            OnlineStorageFormElement sfe = new OnlineStorageFormElement();
+
+            return sfe.CreateOnlineStoragePage(new Point(0, 0),
+                                           DynamicPagePanel.Width,
+                                           DynamicPagePanel.Height,
+                                           this);
+
+        }
+
+        private Panel CreateAccountPanel()
+        {
+            AccountFormElement sfe = new AccountFormElement();
+
+            return sfe.CreateAccountPanel(new Point(0, 0),
+                                           DynamicPagePanel.Width,
+                                           DynamicPagePanel.Height,
+                                           this);
+        }
+
+        private Panel CreateSettingsPanel()
+        {
             SettingsFormElement sfe = new SettingsFormElement();
 
-            CurrentActivePagePanel = sfe.CreateSettingsPanel(new Point(panel_MainLeft.Width, panel_TopBar.Height),
-                                           this.Width - panel_MainLeft.Width,
-                                           this.Height - panel_TopBar.Height);
-
-            this.Controls.Add(CurrentActivePagePanel);
-
+            return sfe.CreateSettingsPanel(new Point(0, 0),
+                                           DynamicPagePanel.Width,
+                                           DynamicPagePanel.Height,
+                                           this);
         }
 
-        private void CreateLocalDevicePanel()
+        private Panel CreateLocalDevicePanel()
         {
-            if(CurrentActivePagePanel != null)
-            {
-                CurrentActivePagePanel.Visible = false;
-                CurrentActivePagePanel = null;
-            }
 
 
             LocalDevicesFormElement lde = new LocalDevicesFormElement();
 
 
-            CurrentActivePagePanel = lde.CreateLocalDevicesElement(new Point(panel_MainLeft.Width, panel_TopBar.Height),
-                                           this.Width - panel_MainLeft.Width,
-                                           this.Height - panel_TopBar.Height);
+            return lde.CreateLocalDevicesElement(new Point(0, 0),
+                                           DynamicPagePanel.Width,
+                                           DynamicPagePanel.Height,
+                                           this);
 
             CreateTitlePanel("Local File Transfer", CurrentActivePagePanel);
-
-            this.Controls.Add(CurrentActivePagePanel);
         }
 
         private void TickTock(object sender, EventArgs e)
         {
             for (int i = 0; i < LeftButtonPanels.Length; i++)
             {
-                if(LeftButtonPanels[i].IsHighlighted)
+                if(LeftButtonPanels[i].IsHighlighted || LeftButtonPanels[i].IsSelected)
                 {
                     // increase
                     int newWidth = LeftButtonPanels[i].PopupPanel.Width + 2;
@@ -502,7 +611,7 @@ namespace FileJump.Forms
                 return;
             }
 
-            btn.BackColor = Color.FromArgb(255, 66, 70, 90);
+            btn.BackColor = Color.FromArgb(255, 96, 100, 120);
         }
 
         private void OnTopBarButtonLeave(object sender, EventArgs e)
@@ -517,7 +626,65 @@ namespace FileJump.Forms
             btn.BackColor = Color.Transparent;
         }
 
-        // EVENTS
+        /////////////////////////// EVENTS ////////////////////////////////
+        ///
+        private void LogoutResultEvent(object sender, LogoutResultEventArgs args)
+        {
+            if (args.Successful)
+            {
+                LogOutAction();
+            }
+        }
+
+        private void LoginResultEvent(object sender, LoginResultEventArgs args)
+        {
+            if (args.Successful)
+            {
+                PerformSuccessfulLogin(args.AccountData);
+            }
+        }
+
+        private void CheckIfShouldPerformLogin()
+        {
+            // Self explanatory
+            if (!UserSettings.RememberLogin)
+            {
+                return;
+            }
+
+            // Check if the email and pw are saved (should be at this point) and perform login
+            if (UserSettings.UserEmail.Length > 0 && UserSettings.UserPassword.Length > 0)
+            {
+                ApiCommunication.SendLoginRequest(UserSettings.UserEmail, UserSettings.UserPassword);
+            }
+        }
+
+        public void PerformSuccessfulLogin(AccountInfoModel accountModel)
+        {
+            UserSettings.UserEmail = accountModel.Email;
+            UserSettings.UserFirstName = accountModel.FirstName;
+            UserSettings.UserLastName = accountModel.LastName;
+            UserSettings.UserAccessToken = accountModel.Accesstoken;
+            UserSettings.LoggedOn = true;
+        }
+
+        public void LogOutAction()
+        {
+            UserSettings.ClearUserSettings();
+        }
+
+        private void InboundTextTransferFinished(object sender, InboundTextTransferEventArgs args)
+        {
+            // Add the message to the database
+            FileHandler _fHandler = new FileHandler();
+            _fHandler.AddNewMessageToXML(args.Message, DateTime.Now.ToString());
+
+            // Show the baloon tooltip
+            BaloonToolTipType = 1;
+            ShowBaloonTooltip("New message received!");
+        }
+
+
 
 
         // SETTINGS
@@ -535,6 +702,41 @@ namespace FileJump.Forms
         private void ChangeDeviceName(string name)
         {
             UserSettings.MachineName = name;
+        }
+
+        // BALOON TIP // 
+
+        public void ShowBaloonTooltip(string msg)
+        {
+            // Don't show it twice if already active
+            if (IsBaloonTipActive)
+            {
+                return;
+            }
+
+            tray_Icon.BalloonTipText = msg;
+            tray_Icon.ShowBalloonTip(1);
+        }
+
+        private void Tray_icon_BalloonTipClicked(object sender, EventArgs e)
+        {
+            if (BaloonToolTipType == 0)
+            {
+                System.Diagnostics.Process.Start(ProgramSettings.StorageFolderPath);
+            }
+
+            IsBaloonTipActive = false;
+
+        }
+
+        private void Tray_icon_BalloonTipClosed(object sender, EventArgs e)
+        {
+            IsBaloonTipActive = false;
+        }
+
+        private void Tray_icon_BalloonTipShown(object sender, EventArgs e)
+        {
+            IsBaloonTipActive = true;
         }
     }
 }

@@ -19,7 +19,7 @@ namespace FileJump.FormElements
     {
         public Panel MainPanel { get; set; }
         private Panel FileAreaPanel { get; set; }
-        private Panel DragDropBackgroundPanel { get; set; }
+
 
         private CustomFlowLayoutPanel panel_FlowLayoutDevices { get; set; }
         private CustomFlowLayoutPanel panel_FlowLayoutFiles { get; set; }
@@ -33,7 +33,15 @@ namespace FileJump.FormElements
         /// </summary>
         private GUIState _GUIState { get; set; }
 
+        private Panel panel_ButtonsMain { get; set; }
+
+        private Panel panel_SendFiles { get; set; }
+
+        private CustomGeneralButton btn_TerminateTransfers { get; set; }
+
         private CustomGeneralButton SendFilesButton { get; set; }
+
+        private Panel panel_DragDropFiles { get; set; }
 
         // Network
         private NetworkDevice SelectedNetworkDevice { get; set; }
@@ -46,8 +54,12 @@ namespace FileJump.FormElements
 
         string[] imageExtensions = new string[] { ".jpg", ".jpeg", ".bmp", ".png" };
 
-        public Panel CreateLocalDevicesElement(Point location, int width, int height)
+    
+        private Form mainForm { get; set; }
+
+        public Panel CreateLocalDevicesElement(Point location, int width, int height, Form _form)
         {
+            mainForm = _form;
             FileDisplayList = new List<DarkFileDisplay>();
             MainPanel = new Panel();
             MainPanel.Location = location;
@@ -60,9 +72,35 @@ namespace FileJump.FormElements
 
             FileDisplayMinX = DeviceScoutPanel.Location.X + DeviceScoutPanel.Width;
 
+            CreateFileAreaPanel(FileDisplayMinX);
+            CreateFileUploadVisualPanel();
+            panel_FlowLayoutFiles.Visible = false;
+
+            panel_DragDropFiles = CreateFileDropSendPanel(FileDisplayMinX);
+            FileAreaPanel.Controls.Add(panel_DragDropFiles);
+
+
+            // Create the various state panels
 
 
 
+            FileAreaPanel.Visible = false;
+
+            panel_ButtonsMain = new Panel();
+
+            panel_ButtonsMain.Location = new Point(FileAreaPanel.Location.X, FileAreaPanel.Location.Y + FileAreaPanel.Height + 10);
+            panel_ButtonsMain.Size = new Size(FileAreaPanel.Width, 200);
+            MainPanel.Controls.Add(panel_ButtonsMain);
+
+            panel_SendFiles = CreateSendButtons();
+            panel_SendFiles.Visible = false; ;
+            panel_ButtonsMain.Controls.Add(panel_SendFiles);
+            panel_ButtonsMain.Controls.Add(btn_TerminateTransfers);
+ 
+
+            ChangeGuiState(GUIState.NoDeviceSelected);
+
+            
             DataProcessor.NetworkDiscoveryEvent += NetworkDiscoveryEvent;
 
             NetComm.ScoutNetworkDevices();
@@ -71,6 +109,7 @@ namespace FileJump.FormElements
             DataProcessor.OutboundTransferFinished += Transferfinished;
             DataProcessor.OutboundTransferStarted += TransferStarted;
             DataProcessor.OutboundTransferProgress += TransferProgress;
+
 
             return MainPanel;
         }
@@ -86,9 +125,167 @@ namespace FileJump.FormElements
                 return;
             }
 
-            dfd.UpdateProgress(e.PercentProgress);
+
+            if (mainForm.InvokeRequired)
+            {
+                mainForm.Invoke((MethodInvoker)delegate { dfd.UpdateProgress(e.PercentProgress); });
+            }
+            
 
                 
+        }
+
+        private void ResetFilesArea()
+        {
+            FileDisplayList = new List<DarkFileDisplay>();
+            panel_FlowLayoutFiles.Controls.Clear();
+            panel_FlowLayoutFiles.Visible = false;
+            //Panel p = CreateFileDropSendPanel(FileDisplayMinX);
+            //FileAreaPanel.Controls.Clear();
+            //FileAreaPanel.Controls.Add(panel_DragDropFiles);
+            panel_DragDropFiles.Visible = true;
+            panel_DragDropFiles.Invalidate();
+        }
+
+        private void ChangeGuiState(GUIState state)
+        {
+            //panel_ButtonsMain.Controls.Clear();
+
+            switch (state)
+            {
+                case GUIState.NoFilesSelected:
+                    // Buttons
+                    panel_SendFiles.Visible = false;
+
+                    FileAreaPanel.Visible = true;
+
+                    panel_DragDropFiles.Visible = true;
+                    ResetFilesArea();
+                    break;
+
+                case GUIState.FilesSelected:
+                    panel_FlowLayoutFiles.Invoke((MethodInvoker)(() => panel_FlowLayoutFiles.Visible = true));
+                    panel_FlowLayoutFiles.Visible = true;
+                    //panel_ButtonsMain.Controls.Add(panel_SendFiles);
+                    panel_SendFiles.Visible = true;
+                    panel_DragDropFiles.Visible = false;
+                    btn_TerminateTransfers.Visible = false;
+
+
+                    break;
+
+                case GUIState.NoDeviceSelected:
+                    break;
+
+                case GUIState.TransfersRunning:
+                    panel_SendFiles.Visible = false;
+                    btn_TerminateTransfers.Visible = true;
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private Panel CreateSendButtons()
+        {
+            Panel panel_Main = new Panel();
+
+            panel_Main.Location = new Point(0, 0);
+            panel_Main.Size = new Size(panel_ButtonsMain.Width, panel_ButtonsMain.Height);
+
+            CustomGeneralButton btn_SendAll = new CustomGeneralButton();
+
+            int btnWidth = (int)((decimal)FileAreaPanel.Width / 3M);
+
+            //
+            // Send All
+            //
+
+            btn_SendAll = new CustomGeneralButton();
+
+            btn_SendAll.Size = new Size(btnWidth, 50);
+
+
+            btn_SendAll.Text = "";
+
+            btn_SendAll.TextFont = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Pixel);
+
+            btn_SendAll.Location = new Point(0, 0);
+
+            btn_SendAll.ButtonText = "Send Files";
+            btn_SendAll.ForeColor = GUITools.COLOR_DarkMode_Text_Bright;
+            btn_SendAll.Click += SendAllFilesButtonClick;
+
+            panel_Main.Controls.Add(btn_SendAll);
+
+            //
+            // Send Selected
+            //
+
+            CustomGeneralButton btn_SendSelected = new CustomGeneralButton();
+
+            btn_SendSelected.Size = new Size(btnWidth, 50);
+
+
+            btn_SendSelected.Text = "";
+
+            btn_SendSelected.TextFont = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Pixel);
+
+            btn_SendSelected.Location = new Point(btnWidth, 0);
+
+            btn_SendSelected.ButtonText = "Send Selected Files";
+            btn_SendSelected.ForeColor = GUITools.COLOR_DarkMode_Text_Bright;
+            btn_SendSelected.Click += SendSelectedFilesButtonClick;
+
+
+            panel_Main.Controls.Add(btn_SendSelected);
+
+            //
+            // Reset
+            //
+
+            CustomGeneralButton btn_Reset = new CustomGeneralButton();
+
+            btn_Reset.Size = new Size(btnWidth, 50);
+
+
+            btn_Reset.Text = "";
+
+            btn_Reset.TextFont = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Pixel);
+
+            btn_Reset.Location = new Point(btnWidth * 2, 0);
+
+            btn_Reset.ButtonText = "Reset Files";
+            btn_Reset.ForeColor = GUITools.COLOR_DarkMode_Text_Bright;
+            btn_Reset.Click += ResetFilesButtonClick;
+
+
+            panel_Main.Controls.Add(btn_Reset);
+
+            btn_TerminateTransfers = new CustomGeneralButton();
+            btn_TerminateTransfers.Size = new Size(btnWidth, 50);
+
+
+            btn_TerminateTransfers.Text = "";
+
+            btn_TerminateTransfers.TextFont = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Pixel);
+
+            btn_TerminateTransfers.Location = new Point(btnWidth, 0);
+
+            btn_TerminateTransfers.ButtonText = "Terminate Transfers";
+            btn_TerminateTransfers.ForeColor = GUITools.COLOR_RedText;
+
+            btn_TerminateTransfers.Click += (sender, args) =>
+            {
+                TerminateTransfers();
+            };
+
+
+            MainPanel.Controls.Add(btn_TerminateTransfers);
+            btn_TerminateTransfers.Visible = false;
+
+            return panel_Main;
         }
 
         /// <summary>
@@ -126,7 +323,7 @@ namespace FileJump.FormElements
                 case "SendFiles":
                     SendFilesButton.ButtonText = "Send Files";
                     SendFilesButton.ForeColor = GUITools.COLOR_DarkMode_Text_Bright;
-                    SendFilesButton.Click += SendFilesButtonClick;
+                    SendFilesButton.Click += SendAllFilesButtonClick;
                     break;
                 case "Terminate":
                     SendFilesButton.ButtonText = "Terminate Transfers";
@@ -181,17 +378,21 @@ namespace FileJump.FormElements
                 return;
             }
 
-            dfd.FileStructure.FileStatus = FileStatus.Finished;
-            dfd.TransferFinished(e);
+            if (mainForm.InvokeRequired)
+            {
+                mainForm.Invoke((MethodInvoker)delegate { dfd.TransferFinished(e); });
+            }
+            
 
             if(FileDisplayList.Where(x => x.FileStructure.FileStatus == FileStatus.QueuedForDownload).Count() <= 0)
             {
-
-                CreateSendButton("Reset");
-
-                _GUIState = GUIState.WaitingForInput;
+                if (mainForm.InvokeRequired)
+                {
+                    mainForm.Invoke((MethodInvoker)delegate { ChangeGuiState(GUIState.FilesSelected); } );
+                }
 
             }
+
         }
 
         private void CreateFileAreaPanel(int minX)
@@ -258,28 +459,6 @@ namespace FileJump.FormElements
             devicePanel.DeviceName = newT;
 
 
-            //devicePanel.MouseDown += (sender, args) =>
-            //{
-            //    LastMouseDownDevice = devicePanel;
-            //    devicePanel.IsPressed = true;
-            //    devicePanel.BackgroundImage = Properties.Resources.device_panel_pressed;
-            //};
-
-            //devicePanel.MouseUp += (sender, args) =>
-            //{
-            //    if(LastMouseDownDevice == devicePanel)
-            //    {
-            //        Console.WriteLine("same!");
-            //        DeviceIconClicked(devicePanel, device);
-            //    } else
-            //    {
-            //        //LastMouseDownDevice.IsPressed = false;
-            //        //LastMouseDownDevice.BackgroundImage = Properties.Resources.device_panel_normal;
-            //    }
-
-                
-            //};
-
             devicePanel.MouseClick += (sender, args) =>
             {
                 DeviceIconClicked(devicePanel, device);
@@ -301,9 +480,7 @@ namespace FileJump.FormElements
         {
             int width = (int)((decimal)FileAreaPanel.Width / 4.30M);
             int height = (int)((decimal)FileAreaPanel.Width / 4M);
-
-            
-
+                        
             Bitmap icon;
 
             if (imageExtensions.Contains(file_struct.FileExtension.ToLower()))
@@ -316,9 +493,6 @@ namespace FileJump.FormElements
                 icon = Icon.ExtractAssociatedIcon(file_struct.FilePath).ToBitmap();
             }
 
-
-
-
             DarkFileDisplay dfd = new DarkFileDisplay(width, height, icon, false, file_struct.FullName, panel_FlowLayoutFiles);
 
             dfd.FileStructure = file_struct;
@@ -327,6 +501,11 @@ namespace FileJump.FormElements
             {
                 FileIconClick(dfd);
             });
+
+            if (mainForm.InvokeRequired)
+            {
+                mainForm.Invoke((MethodInvoker)delegate { dfd.AddToControl(panel_FlowLayoutFiles); });
+            }
 
             //dfd.AddToControl(panel_FlowLayoutFiles);
 
@@ -337,30 +516,40 @@ namespace FileJump.FormElements
 
         private void FileIconClick(DarkFileDisplay dfd)
         {
-            dfd.IsSelected = !dfd.IsSelected;
+            if (Control.ModifierKeys == Keys.Control)
+            {
+                dfd.IsSelected = !dfd.IsSelected;
+
+                return;
+            }
+
+            if (Control.ModifierKeys == Keys.Shift)
+            {
+                return;
+            }
+
+            // if none is pressed
+
+            foreach(DarkFileDisplay df in FileDisplayList)
+            {
+                df.IsSelected = false;
+            }
+
+            dfd.IsSelected = true;
+
+
+
         }
 
-        private void ResetFilesArea()
-        {
-            FileDisplayList = new List<DarkFileDisplay>();
-            panel_FlowLayoutFiles.Controls.Clear();
-            Panel p = CreateFileDropSendPanel(FileDisplayMinX);
-            FileAreaPanel.Controls.Clear();
-            FileAreaPanel.Controls.Add(p);
-            SendFilesButton.Visible = false;
-        }
+       
 
-        private void CreateFileUploadVisual()
+        private void CreateFileUploadVisualPanel()
         {
-            DragDropBackgroundPanel.Visible = false;
-            DragDropBackgroundPanel = null;
-
             panel_FlowLayoutFiles = new CustomFlowLayoutPanel();
             panel_FlowLayoutFiles.Size = new Size(FileAreaPanel.Width + 35, FileAreaPanel.Height - 5); // Dunno, it works
             panel_FlowLayoutFiles.Location = new Point(3, 3);
             FileAreaPanel.Controls.Add(panel_FlowLayoutFiles);
             //panel_FlowLayoutFiles.Padding = new Padding(1);
-            Console.WriteLine(panel_FlowLayoutFiles.Padding);
 
             panel_FlowLayoutFiles.BackColor = Color.Transparent;
             panel_FlowLayoutFiles.AutoScroll = true;
@@ -369,8 +558,7 @@ namespace FileJump.FormElements
             //panel_FlowLayoutFiles.AutoScrollMargin = new Size(100, 20);
             panel_FlowLayoutFiles.VerticalScroll.Enabled = true;
 
-            CreateSendButton("SendFiles");
-
+            FileAreaPanel.Controls.Add(panel_FlowLayoutFiles);
 
         }
 
@@ -394,10 +582,9 @@ namespace FileJump.FormElements
         {
             if(SelectedNetworkDevice == null)
             {
-                CreateFileAreaPanel(FileDisplayMinX);
-                Panel FilesPanel = CreateFileDropSendPanel(FileDisplayMinX);
+                //CreateFileAreaPanel(FileDisplayMinX);
 
-                FileAreaPanel.Controls.Add(FilesPanel);
+                ChangeGuiState(GUIState.NoFilesSelected);
             }
 
             SelectedNetworkDevice = device;
@@ -448,7 +635,7 @@ namespace FileJump.FormElements
 
             Label label_Text = new Label();
 
-            label_Text.Font = new Font("Arial", 16, FontStyle.Bold, GraphicsUnit.Pixel);
+            label_Text.Font = GUITools.FONT_WallText;
             label_Text.AutoSize = true;
             label_Text.ForeColor = GUITools.COLOR_DarkMode_Text_Light;
             label_Text.Text = "Local Accessible Devices";
@@ -474,21 +661,8 @@ namespace FileJump.FormElements
             btn_Refresh.TextFont = new Font("Arial", 12, FontStyle.Bold, GraphicsUnit.Pixel);
             
             btn_Refresh.Location = new Point(panel_Main.Location.X + panel_Main.Width / 2 - btn_Refresh.Width / 2,
-    panel_Main.Location.Y + panel_Main.Height + 15);
+    panel_Main.Location.Y + panel_Main.Height + 10);
 
-            //btn_Refresh.MouseDown += (sender, args) =>
-            //{
-            //    btn_Refresh.IsPressed = true;
-            //    btn_Refresh.BackgroundImage = Properties.Resources.device_panel_pressed;
-            //    btn_Refresh.Invalidate();
-            //};
-
-            //btn_Refresh.MouseUp += (sender, args) =>
-            //{
-            //    btn_Refresh.IsPressed = false;
-            //    btn_Refresh.BackgroundImage = Properties.Resources.device_panel_normal;
-            //    btn_Refresh.Invalidate();
-            //};
 
             btn_Refresh.Click += (sender, args) =>
             {
@@ -510,9 +684,7 @@ namespace FileJump.FormElements
 
         private Panel CreateFileDropSendPanel(int minX)
         {
-
-
-            DragDropBackgroundPanel = new Panel();
+            Panel DragDropBackgroundPanel = new Panel();
             DragDropBackgroundPanel.Enabled = true;
             DragDropBackgroundPanel.Visible = true;
             DragDropBackgroundPanel.Size = FileAreaPanel.Size;
@@ -573,30 +745,71 @@ namespace FileJump.FormElements
 
         private void ProcessFileArray(string[] paths)
         {
-            CreateFileUploadVisual();
-
-
-            
-
-            int id = 0;
-
-            foreach (string file in paths)
+            if (mainForm.InvokeRequired)
             {
-                LocalFileStructure fStruct = new LocalFileStructure();
-                fStruct.FileStatus = FileStatus.Inactive;
-                FileInfo fInfo = new FileInfo(file);
-                fStruct.FilePath = file;
-                fStruct.FileExtension = Path.GetExtension(file);
-                fStruct.FileName = Path.GetFileNameWithoutExtension(file);
-                fStruct.FileSize = fInfo.Length;
-                fStruct.FullName = fInfo.Name;
-                fStruct.FileID = id;
-                fStruct.FileSize = fInfo.Length;
-                AddNewQueuedFile(fStruct);
-                id++;
+                mainForm.Invoke((MethodInvoker)delegate { ChangeGuiState(GUIState.FilesSelected); });
             }
 
-            CreateSendButton("SendFiles");
+            //mainForm.Invoke((MethodInvoker)delegate { panel_SendFiles.Visible = false; });
+
+
+            //ChangeGuiState(GUIState.FilesSelected);
+
+            CustomProgressBar progressBar = new CustomProgressBar()
+            {
+                Size = new Size(FileAreaPanel.Width, 20),
+                Location = new Point(0, 0),
+            };
+
+            progressBar.BackgroundBarColor = GUITools.COLOR_DarkMode_Light;
+            progressBar.ProgressBarColor = Color.Green;
+            progressBar.Percentage = 0;
+
+            mainForm.Invoke((MethodInvoker)delegate { panel_ButtonsMain.Controls.Add(progressBar); panel_SendFiles.Visible = false; });
+            
+
+            for (int i = 0; i < paths.Length; i++)
+            {
+                decimal pp = (decimal)i / (decimal)paths.Length;
+
+                progressBar.Percentage = (int)Math.Round(pp * 100);
+
+                LocalFileStructure fStruct = new LocalFileStructure();
+                fStruct.FileStatus = FileStatus.Inactive;
+                FileInfo fInfo = new FileInfo(paths[i]);
+                fStruct.FilePath = paths[i];
+                fStruct.FileExtension = Path.GetExtension(paths[i]);
+                fStruct.FileName = Path.GetFileNameWithoutExtension(paths[i]);
+                fStruct.FileSize = fInfo.Length;
+                fStruct.FullName = fInfo.Name;
+                fStruct.FileID = i;
+                fStruct.FileSize = fInfo.Length;
+                AddNewQueuedFile(fStruct);
+            }
+
+
+            mainForm.Invoke((MethodInvoker)delegate { panel_SendFiles.Visible = true; progressBar.Visible = false; });
+
+            //mainForm.Invoke((MethodInvoker)delegate { progressBar.Visible = false; });
+
+
+            //foreach (string file in paths)
+            //{
+            //    LocalFileStructure fStruct = new LocalFileStructure();
+            //    fStruct.FileStatus = FileStatus.Inactive;
+            //    FileInfo fInfo = new FileInfo(file);
+            //    fStruct.FilePath = file;
+            //    fStruct.FileExtension = Path.GetExtension(file);
+            //    fStruct.FileName = Path.GetFileNameWithoutExtension(file);
+            //    fStruct.FileSize = fInfo.Length;
+            //    fStruct.FullName = fInfo.Name;
+            //    fStruct.FileID = id;
+            //    fStruct.FileSize = fInfo.Length;
+            //    AddNewQueuedFile(fStruct);
+            //    id++;
+            //}
+
+
         }
 
         private void btn_ChooseFromDevice_Click(object sender, EventArgs e)
@@ -612,7 +825,11 @@ namespace FileJump.FormElements
                 return;   
             }
 
-            ProcessFileArray(dialog_OpenFiles.FileNames);
+            // Start this in a new thread, much smoother
+            Thread ProcessThread = new Thread(() => ProcessFileArray(dialog_OpenFiles.FileNames));
+            ProcessThread.Start();
+
+            //ProcessFileArray(dialog_OpenFiles.FileNames);
             
         }
 
@@ -623,13 +840,13 @@ namespace FileJump.FormElements
                 Pen pen = new Pen(Color.FromArgb(100, 155, 155, 0));
 
                 GraphicsPath path = new GraphicsPath();
-                path.AddRectangle(new Rectangle(0, 0, DragDropBackgroundPanel.Width, DragDropBackgroundPanel.Height));
+                path.AddRectangle(new Rectangle(0, 0, panel_DragDropFiles.Width, panel_DragDropFiles.Height));
 
                 PathGradientBrush pathBrush = new PathGradientBrush(path);
                 pathBrush.CenterColor = Color.FromArgb(170, 153, 217, 234);
                 Color[] colors = { Color.FromArgb(100, 103, 167, 184), Color.FromArgb(0, 0, 255, 0) };
                 pathBrush.SurroundColors = colors;
-                p.Graphics.FillRectangle(pathBrush, new Rectangle(0, 0, DragDropBackgroundPanel.Width, DragDropBackgroundPanel.Height));
+                p.Graphics.FillRectangle(pathBrush, new Rectangle(0, 0, panel_DragDropFiles.Width, panel_DragDropFiles.Height));
             }
 
         }
@@ -640,13 +857,13 @@ namespace FileJump.FormElements
         {
             if (de.Data.GetDataPresent(DataFormats.FileDrop)) de.Effect = DragDropEffects.Copy;
             IsDragging = true;
-            DragDropBackgroundPanel.Invalidate();
+            panel_DragDropFiles.Invalidate();
         }
 
         private void DragDrop_Leave(object sender, EventArgs de)
         {
             IsDragging = false;
-            DragDropBackgroundPanel.Invalidate();
+            panel_DragDropFiles.Invalidate();
         }
 
         private void DragDrop_Drop(object sender, DragEventArgs de)
@@ -659,10 +876,12 @@ namespace FileJump.FormElements
             }
 
             ProcessFileArray(files);
+            IsDragging = false;
+            panel_DragDropFiles.Invalidate();
             
         }
 
-        private void SendFilesButtonClick(object sender, EventArgs e)
+        private void SendAllFilesButtonClick(object sender, EventArgs e)
         {
             // Check if there are files currently queued
             if (FileDisplayList.Count <= 0)
@@ -677,10 +896,8 @@ namespace FileJump.FormElements
                 return;
             }
 
-            CreateSendButton("Terminate");
+            
 
-
-            _GUIState = GUIState.TransfersRunning;
 
             UploadList = new List<LocalFileStructure>();
 
@@ -696,7 +913,57 @@ namespace FileJump.FormElements
 
             }
 
-            DataProcessor.SendFiles(UploadList, SelectedNetworkDevice.EndPoint);
+            if(UploadList.Count > 0)
+            {
+                ChangeGuiState(GUIState.TransfersRunning);
+
+                DataProcessor.SendFiles(UploadList, SelectedNetworkDevice.EndPoint);
+            }
+
+
+        }
+
+        private void ResetFilesButtonClick(object sender, EventArgs e)
+        {
+            ChangeGuiState(GUIState.NoFilesSelected);
+        }
+
+        private void SendSelectedFilesButtonClick(object sender, EventArgs e)
+        {
+            // Check if there are files currently queued
+            if (FileDisplayList.Count <= 0)
+            {
+                return;
+            }
+
+            // And the transfer processe(s) are not currently running.
+            // The button is supposed to gray out when this is true, but you never know
+            if (_GUIState == GUIState.TransfersRunning)
+            {
+                return;
+            }
+
+
+
+
+            UploadList = new List<LocalFileStructure>();
+
+            //Sift through the files to see if there are some waiting to be sent
+            for (int i = 0; i < FileDisplayList.Count; i++)
+            {
+                if (FileDisplayList[i].IsSelected)
+                {
+                    FileDisplayList[i].FileStructure.FileStatus = FileStatus.QueuedForDownload;
+                    UploadList.Add(FileDisplayList[i].FileStructure);
+                }
+            }
+
+            if(UploadList.Count > 0)
+            {
+                ChangeGuiState(GUIState.TransfersRunning);
+
+                DataProcessor.SendFiles(UploadList, SelectedNetworkDevice.EndPoint);
+            }
         }
 
         private void TerminateTransfers()
@@ -707,15 +974,18 @@ namespace FileJump.FormElements
             {
                 if(FileDisplayList[i].FileStructure.FileStatus != FileStatus.Finished)
                 {
-                    FileDisplayList[i].TransferFinished(new OutTransferEventArgs(FileDisplayList[i].FileStructure.FilePath,
-                                                                                 false,
-                                                                                 "Terminated"));
+                    if(FileDisplayList[i].FileStructure.FileStatus == FileStatus.QueuedForDownload)
+                    {
+                        FileDisplayList[i].TransferFinished(new OutTransferEventArgs(FileDisplayList[i].FileStructure.FilePath,
+                                                             false,
+                                                             "Terminated"));
+                    }
+
                 }
             }
 
 
-
-            _GUIState = GUIState.WaitingForInput;
+            ChangeGuiState(GUIState.FilesSelected);
         }
 
 

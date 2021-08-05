@@ -128,7 +128,9 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Debugging\Debugger.cs" />
+    <Compile Include="FormElements\AccountFormElement.cs" />
     <Compile Include="FormElements\LocalDevicesFormElement.cs" />
+    <Compile Include="FormElements\OnlineStorageFormElement.cs" />
     <Compile Include="FormElements\SettingsFormElement.cs" />
     <Compile Include="Forms\FileUploadPage.cs">
       <SubType>Form</SubType>

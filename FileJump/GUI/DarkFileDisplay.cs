@@ -20,15 +20,19 @@ namespace FileJump.GUI
 
         private Panel panel_Background { get; set; }
 
+        private Panel panel_Check { get; set; }
         private CustomProgressBar progress_Download { get; set; }
+
+        public bool TransferSuccessful { get; set; }
 
         private PictureBox pBox_Thumbnail { get; set; }
         private string FileName { get; set; }
 
         private bool PaintBorder { get; set; }
 
+
         private Color MouseOverColor = Color.FromArgb(100, 229, 243, 255);
-        private Color SelectedColor = Color.FromArgb(100, 204, 232, 255);
+        private Color SelectedColor = Color.FromArgb(100, 164, 192, 215);
         private Color BorderColor = Color.FromArgb(255, 153, 209, 255);
 
 
@@ -57,7 +61,7 @@ namespace FileJump.GUI
             panel_Background.Size = MainSize;
             panel_Background.Paint += PaintBackgroundPanel;
 
-            target.Controls.Add(panel_Background);
+            //target.Controls.Add(panel_Background);
 
             if (framed)
             {
@@ -171,10 +175,16 @@ namespace FileJump.GUI
             progress_Download.Percentage = 0;
 
 
-            progress_Download.Visible = true;
+            progress_Download.Visible = false;
 
             panel_Background.Controls.Add(progress_Download);
 
+            panel_Check = new Panel();
+            panel_Check.Size = new Size(10, 10);
+            panel_Check.Location = new Point(panel_Background.Width / 2 - panel_Check.Width / 2, 0);
+            panel_Check.Visible = false;
+            panel_Check.BackgroundImageLayout = ImageLayout.Stretch;
+            panel_Background.Controls.Add(panel_Check);
 
 
             // Always as last thing
@@ -197,51 +207,37 @@ namespace FileJump.GUI
 
         public void UpdateProgress(int progress)
         {
+            if (panel_Check.Visible)
+            {
+                panel_Check.Visible = false;
+            }
+
+
+            if (!progress_Download.Visible)
+            {
+                progress_Download.Visible = true;
+            }
+ 
             progress_Download.Percentage = progress;
         }
 
         public void TransferFinished(OutTransferEventArgs e)
         {
-            FileStructure.FileStatus = FileStatus.Finished;
 
-            if (progress_Download.InvokeRequired)
-            {
-                progress_Download.Invoke(
-                    new MethodInvoker(
-                    delegate () { progress_Download.Visible = false; }));
-            } else
-            {
-                progress_Download.Visible = false;
-            }
-
-
-
-            Panel check = new Panel();
-            check.Size = new Size(10, 10);
-            check.Location = new Point(panel_Background.Width / 2 - check.Width / 2, 0);
+            progress_Download.Visible = false;
+            panel_Check.Visible = true;
 
             if (e.IsSuccessful)
             {
-                check.BackgroundImage = Properties.Resources.TransferResult_CheckMark;
+                panel_Check.BackgroundImage = Properties.Resources.TransferResult_CheckMark;
+                FileStructure.FileStatus = FileStatus.Finished;
             }
             else
             {
-                check.BackgroundImage = Properties.Resources.TransferResult_Cross;
+                panel_Check.BackgroundImage = Properties.Resources.TransferResult_Cross;
+                FileStructure.FileStatus = FileStatus.Inactive;
             }
-
-            check.BackgroundImageLayout = ImageLayout.Stretch;
-
-            if (panel_Background.InvokeRequired)
-            {
-                panel_Background.Invoke(
-                    new MethodInvoker(
-                    delegate () { panel_Background.Controls.Add(check); }));
-            } else
-            {
-                panel_Background.Controls.Add(check);
-            }
-
-           
+         
         }
 
         public void ActionOnClick(System.Action action)

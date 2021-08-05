@@ -13,6 +13,12 @@ namespace FileJump
     public enum GUIState
     {
         TransfersRunning = 1,
-        WaitingForInput = 2
+        WaitingForInput = 2,
+        NoFilesSelected = 3,
+        FilesSelected = 4,
+        TransfersFinished = 5,
+        NoDeviceSelected = 6,
+
+        
     }
 }

@@ -197,7 +197,7 @@ namespace FileJump.Forms
             this.panel_ForgotPassword.Controls.Add(this.label5);
             this.panel_ForgotPassword.Controls.Add(this.input_ForgotPW_Email);
             this.panel_ForgotPassword.Controls.Add(this.btn_SendForgotPW);
-            this.panel_ForgotPassword.Location = new System.Drawing.Point(35, 117);
+            this.panel_ForgotPassword.Location = new System.Drawing.Point(673, 120);
             this.panel_ForgotPassword.Name = "panel_ForgotPassword";
             this.panel_ForgotPassword.Size = new System.Drawing.Size(414, 428);
             this.panel_ForgotPassword.TabIndex = 18;
@@ -210,7 +210,7 @@ namespace FileJump.Forms
             this.label_EmailRecoverySuccess.Location = new System.Drawing.Point(28, 227);
             this.label_EmailRecoverySuccess.MaximumSize = new System.Drawing.Size(370, 0);
             this.label_EmailRecoverySuccess.Name = "label_EmailRecoverySuccess";
-            this.label_EmailRecoverySuccess.Size = new System.Drawing.Size(460, 50);
+            this.label_EmailRecoverySuccess.Size = new System.Drawing.Size(368, 40);
             this.label_EmailRecoverySuccess.TabIndex = 19;
             this.label_EmailRecoverySuccess.Text = "                       Thank you!\r\nPlease check your email inbox for all the deta" +
     "ils.";
@@ -231,7 +231,7 @@ namespace FileJump.Forms
             this.label3.AutoSize = true;
             this.label3.Font = new System.Drawing.Font("Microsoft Sans Serif", 16F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label3.ForeColor = System.Drawing.SystemColors.GrayText;
-            this.label3.Location = new System.Drawing.Point(80, 12);
+            this.label3.Location = new System.Drawing.Point(95, 17);
             this.label3.Name = "label3";
             this.label3.Size = new System.Drawing.Size(235, 31);
             this.label3.TabIndex = 16;
@@ -330,7 +330,7 @@ namespace FileJump.Forms
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(482, 560);
+            this.ClientSize = new System.Drawing.Size(1293, 763);
             this.Controls.Add(this.panel_Success);
             this.Controls.Add(this.btn_BackToLogin);
             this.Controls.Add(this.panel_ForgotPassword);

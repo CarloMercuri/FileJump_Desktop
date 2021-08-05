@@ -11,9 +11,9 @@ using System.Xml.Linq;
 
 namespace FileJump
 {
-    public static class FileHandler
+    public class FileHandler : IFileHandler
     {
-        public static bool FileExists(string filePath)
+        public bool FileExists(string filePath)
         {
             if (File.Exists(filePath))
             {
@@ -31,12 +31,12 @@ namespace FileJump
         /// </summary>
         /// <param name="buffer"></param>
         /// <param name="fStruct"></param>
-        public static void SaveFileToLocalStorage(byte[] buffer, LocalFileStructure fStruct)
+        public void SaveFileToLocalStorage(byte[] buffer, LocalFileStructure fStruct)
         {
             string fullName = fStruct.FileName + fStruct.FileExtension;
             string filePath = Path.Combine(ProgramSettings.StorageFolderPath, fullName);
 
-            filePath = GetValidFileName(filePath);
+            filePath = GetValidPath(filePath);
 
             using (Stream file = File.OpenWrite(filePath))
             {
@@ -50,7 +50,7 @@ namespace FileJump
         /// </summary>
         /// <param name="msg"></param>
         /// <param name="date"></param>
-        public static void AddNewMessageToXML(string msg, string date)
+        public void AddNewMessageToXML(string msg, string date)
         {
             XDocument doc = XDocument.Load(Path.Combine(Directory.GetCurrentDirectory(), "XmlDatabase.xml"));
 
@@ -67,7 +67,7 @@ namespace FileJump
             
         }
 
-        public static void RemoveXmlDatabaseElement(int id)
+        public void RemoveXmlDatabaseElement(int id)
         {
             List<TextMessage> list = ReadXmlDatabase();
 
@@ -82,7 +82,7 @@ namespace FileJump
             }
         }
 
-        private static void ClearXmlDatabase()
+        private void ClearXmlDatabase()
         {
             XDocument xml = XDocument.Load(Path.Combine(Directory.GetCurrentDirectory(), "XmlDatabase.xml"));
             XElement Messages = xml.Element("Messages");
@@ -96,7 +96,7 @@ namespace FileJump
         /// Returns a TextMessage list with the contents of the database
         /// </summary>
         /// <returns></returns>
-        public static List<TextMessage> ReadXmlDatabase()
+        public List<TextMessage> ReadXmlDatabase()
         {
             XDocument xml = XDocument.Load(Path.Combine(Directory.GetCurrentDirectory(), "XmlDatabase.xml"));
 
@@ -125,7 +125,7 @@ namespace FileJump
 
       
 
-        public static string GetValidFileName(string filePath)
+        public string GetValidPath(string filePath)
         {
             if (File.Exists(filePath))
             {
@@ -154,7 +154,7 @@ namespace FileJump
             return filePath;
         }
 
-        private static bool HasWriteAccessToFolder(string folderPath)
+        private bool HasWriteAccessToFolder(string folderPath)
         {
             try
             {

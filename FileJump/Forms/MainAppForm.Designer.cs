@@ -36,6 +36,7 @@ namespace FileJump.Forms
             this.btn_Topbar_Minimize = new System.Windows.Forms.Button();
             this.btn_Topbar_Close = new System.Windows.Forms.Button();
             this.TickTimer = new System.Windows.Forms.Timer(this.components);
+            this.tray_Icon = new System.Windows.Forms.NotifyIcon(this.components);
             this.panel_TopBar.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -90,6 +91,14 @@ namespace FileJump.Forms
             // 
             this.TickTimer.Interval = 3;
             // 
+            // tray_Icon
+            // 
+            this.tray_Icon.BalloonTipIcon = System.Windows.Forms.ToolTipIcon.Info;
+            this.tray_Icon.BalloonTipTitle = "Transfer Complete";
+            this.tray_Icon.Icon = ((System.Drawing.Icon)(resources.GetObject("tray_Icon.Icon")));
+            this.tray_Icon.Text = "notifyIcon1";
+            this.tray_Icon.Visible = true;
+            // 
             // MainAppForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -116,5 +125,6 @@ namespace FileJump.Forms
         private System.Windows.Forms.Button btn_Topbar_Minimize;
         private System.Windows.Forms.Button btn_Topbar_Close;
         private System.Windows.Forms.Timer TickTimer;
+        private System.Windows.Forms.NotifyIcon tray_Icon;
     }
 }

@@ -14,8 +14,22 @@ namespace FileJump.CustomControls
         public bool IsPressed { get; set; }
         public Font TextFont { get; set; }
         public string ButtonText { get; set; }
+        private Color _textColor { get; set; }
+        public Color TextColor
+        {
+            get { return this.ForeColor; }
+            set { UpdateForeColor(value); }
+        }
+
+        
 
         private Image CustomBackground { get; set; }
+
+        private void UpdateForeColor(Color color)
+        {
+            this.ForeColor = color;
+            this.Invalidate();
+        }
 
         public CustomGeneralButton()
            : base()
@@ -56,6 +70,7 @@ namespace FileJump.CustomControls
                 
             }
 
+            
 
             e.Graphics.DrawImage(CustomBackground, new Rectangle(0,
                                                                0,
@@ -63,7 +78,16 @@ namespace FileJump.CustomControls
                                                                this.Height 
                                                                ));
 
-            e.Graphics.DrawString(ButtonText, this.TextFont, new SolidBrush(this.ForeColor), new Point(textX, textY));
+            if (this.Enabled)
+            {
+                e.Graphics.DrawString(ButtonText, this.TextFont, new SolidBrush(this.ForeColor), new Point(textX, textY));
+            } else
+            {
+                e.Graphics.DrawString(ButtonText, this.TextFont, new SolidBrush(Color.Gray), new Point(textX, textY));
+            }
+            
+
+           
             //base.OnPaint(e);
         }
 

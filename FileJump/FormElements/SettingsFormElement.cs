@@ -13,9 +13,13 @@ namespace FileJump.FormElements
         private CheckBox checkBox_RunStartup { get; set; }
         private Panel MainPanel { get; set; }
 
+        private Form mainForm { get; set; }
+
     
-        public Panel CreateSettingsPanel(Point location, int width, int height)
+        public Panel CreateSettingsPanel(Point location, int width, int height, Form _mainForm)
         {
+            mainForm = _mainForm;
+
             MainPanel = new Panel();
             MainPanel.Location = location;
             MainPanel.Size = new Size(width, height);
