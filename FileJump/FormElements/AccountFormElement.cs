@@ -421,6 +421,7 @@ namespace FileJump.FormElements
 
             btn_RegisterAccount.ButtonText = "Register new Account";
             btn_RegisterAccount.ForeColor = GUITools.COLOR_DarkMode_Text_Bright;
+            
 
             btn_RegisterAccount.Click += RegisterButtonClick;
 
@@ -702,8 +703,9 @@ namespace FileJump.FormElements
             btn_SendRegistrationInfo.TextColor = GUITools.COLOR_DarkMode_Text_Bright;
             btn_SendRegistrationInfo.Click += SendRegistrationInfo;
 
-            RegistrationInputPanel.Controls.Add(btn_SendRegistrationInfo);
 
+            RegistrationInputPanel.Controls.Add(btn_SendRegistrationInfo);
+           
 
             ////////////////////////////    RIGHT PANEL   ///////////////////////////////
 
@@ -1005,7 +1007,7 @@ namespace FileJump.FormElements
             }
             else
             {
-
+                btn_SendRegistrationInfo.SetWaitingState(false);
             }
         }
 
@@ -1019,6 +1021,9 @@ namespace FileJump.FormElements
             // Send the post. Will come back as an event in RegistrationActionResult
             ApiCommunication.SendNewAccountRegistrationData(
                 input_Email.Text, input_RegisterPassword1.Text, input_FirstName.Text, input_LastName.Text);
+
+            btn_SendRegistrationInfo.SetWaitingState(true, "Sending info");
+           
 
         }
 

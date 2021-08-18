@@ -131,15 +131,15 @@ namespace FileJump.Forms
                 ChangeDestinationFolder(Path.Combine(Directory.GetCurrentDirectory(), "Incoming Files"));
             }
 
-             // Check the startup setting
-            if (UserSettings.RunOnStartUp == true)
-            {
-                startup_Checkbox.CheckState = CheckState.Checked; // This also automatically runs AddToStartup which checks if it is running on startup,
-            }                                                     // else it adds it.  
-            else
-            {
-                startup_Checkbox.CheckState = CheckState.Unchecked; // This runs the remove check
-            }
+            // // Check the startup setting
+            //if (UserSettings.RunOnStartUp == true)
+            //{
+            //    startup_Checkbox.CheckState = CheckState.Checked; // This also automatically runs AddToStartup which checks if it is running on startup,
+            //}                                                     // else it adds it.  
+            //else
+            //{
+            //    startup_Checkbox.CheckState = CheckState.Unchecked; // This runs the remove check
+            //}
 
 #endif
 

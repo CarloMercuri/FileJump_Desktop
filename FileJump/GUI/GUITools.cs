@@ -98,6 +98,8 @@ namespace FileJump.GUI
             return newText;
         }
 
+
+
         public static SizeF GetLabelTextLenght(string text, Label label)
         {
             using(Graphics g = Graphics.FromHwnd(label.Handle))
